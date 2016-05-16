@@ -835,8 +835,7 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, GdkEventExpose *event)
 */
 extern void glg_line_graph_redraw (GlgLineGraph *graph)
 {
-	GtkWidget *widget;
-	GdkRegion *region;
+	cairo_region_t *region;
 	GdkWindow *window = NULL;
 	
 	if (glg_flag_debug) {
@@ -844,18 +843,16 @@ extern void glg_line_graph_redraw (GlgLineGraph *graph)
 	}
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 		
-	widget = GTK_WIDGET (graph);
-
-	window = gtk_widget_get_window(widget);
+	window = gtk_widget_get_window( GTK_WIDGET (graph) );
     g_return_if_fail ( GDK_IS_WINDOW(window) );
 
 
-	region = gdk_drawable_get_clip_region (window);
+	region = gdk_window_get_clip_region(window);
 	/* redraw the window completely by exposing it */
 	gdk_window_invalidate_region (window, region, TRUE);
 	/* gdk_window_process_updates (widget->window, TRUE); */
 
-	gdk_region_destroy (region);
+	cairo_region_destroy(region);
 }
 
 /**
