@@ -818,9 +818,9 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
         
     /* 
      * --- Erase the old stuff --- */
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->window_color.red/65535, 
-    								(gdouble)priv->window_color.green/65535, 
-    								(gdouble)priv->window_color.blue/65535);
+    cairo_set_source_rgb (priv->cr, (gdouble)priv->window_color.red,
+    								(gdouble)priv->window_color.green,
+    								(gdouble)priv->window_color.blue);
 	cairo_rectangle (cr, 0,0, priv->page_box.width, priv->page_box.height);
 	cairo_clip (cr);
  
@@ -1070,9 +1070,9 @@ static void glg_line_graph_draw (GtkWidget *graph)
     /* 
      * draw plot area
      */
-    cairo_set_source_rgba (priv->cr, (gdouble)priv->chart_color.red/65535, 
-    								 (gdouble)priv->chart_color.green/65535, 
-    								 (gdouble)priv->chart_color.blue/65535, 0.5);
+    cairo_set_source_rgba (priv->cr, (gdouble)priv->chart_color.red,
+    								 (gdouble)priv->chart_color.green,
+    								 (gdouble)priv->chart_color.blue, 0.5);
 	cairo_rectangle (priv->cr, priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
 	cairo_fill_preserve (priv->cr);
     cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */ 
@@ -1171,9 +1171,9 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
     }
 
 	/* title_gc */	
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red/65535, 
-    								(gdouble)priv->title_color.green/65535, 
-    								(gdouble)priv->title_color.blue/65535);
+    cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
+    								(gdouble)priv->title_color.green,
+    								(gdouble)priv->title_color.blue);
 	cairo_move_to (priv->cr, x_pos, y_pos); 
 	pango_cairo_show_layout (priv->cr, layout);
 
@@ -1222,9 +1222,9 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
     }
 
 	/* title_gc */	
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red/65535, 
-    								(gdouble)priv->title_color.green/65535, 
-    								(gdouble)priv->title_color.blue/65535);
+    cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
+    								(gdouble)priv->title_color.green,
+    								(gdouble)priv->title_color.blue);
 	cairo_move_to (priv->cr, rect->x, y_pos); 
 
 	cairo_rotate(priv->cr, -90 * G_PI / 180.); 
@@ -1266,9 +1266,9 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 
-   	cairo_set_source_rgba (priv->cr, (gdouble)priv->window_color.red/65535, 
-    								 (gdouble)priv->window_color.green/65535, 
-    								 (gdouble)priv->window_color.blue/65535, 0.4);
+   	cairo_set_source_rgba (priv->cr, (gdouble)priv->window_color.red,
+    								 (gdouble)priv->window_color.green,
+    								 (gdouble)priv->window_color.blue, 0.4);
  
     count_major = priv->y_range.i_num_major - 1;
     count_minor = priv->y_range.i_num_minor - 1;
@@ -1427,9 +1427,9 @@ static void glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph)
     }
 
     if ( priv->page_box.width > cx ) {
-	     cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red/65535, 
-    								 (gdouble)priv->scale_color.green/65535, 
-    								 (gdouble)priv->scale_color.blue/65535, 0.6);
+	     cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
+    								 (gdouble)priv->scale_color.green,
+    								 (gdouble)priv->scale_color.blue, 0.6);
 		 
          cairo_move_to (priv->cr, priv->plot_box.x - x_adj, priv->plot_box.y + priv->plot_box.height );
          pango_cairo_show_layout (priv->cr, layout);
@@ -1486,9 +1486,9 @@ static void glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph)
 
     pango_cairo_update_layout (priv->cr, layout);
 
-    cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red/65535, 
-    								 (gdouble)priv->scale_color.green/65535, 
-    								 (gdouble)priv->scale_color.blue/65535, 0.6);
+    cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
+    								 (gdouble)priv->scale_color.green,
+    								 (gdouble)priv->scale_color.blue, 0.6);
 		 
     cairo_move_to (priv->cr, priv->plot_box.x - (width * 1.4), priv->plot_box.y - y_adj );
     pango_cairo_show_layout (priv->cr, layout);
@@ -1652,20 +1652,20 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
     x_pos = priv->tooltip_box.x + ((priv->tooltip_box.width - width) / 2);
     y_pos = priv->tooltip_box.y + ((priv->tooltip_box.height - height) / 2);
     /* box_gc */
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->window_color.red/65535, 
-    								 (gdouble)priv->window_color.green/65535, 
-    								 (gdouble)priv->window_color.blue/65535);		 
+    cairo_set_source_rgb (priv->cr, (gdouble)priv->window_color.red,
+    								 (gdouble)priv->window_color.green,
+    								 (gdouble)priv->window_color.blue);
     cairo_rectangle (priv->cr, priv->tooltip_box.x, priv->tooltip_box.y, 
     						   priv->tooltip_box.width, priv->tooltip_box.height);
     cairo_fill_preserve (priv->cr);
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->scale_color.red/65535, 
-    								 (gdouble)priv->scale_color.green/65535, 
-    								 (gdouble)priv->scale_color.blue/65535);		     
+    cairo_set_source_rgb (priv->cr, (gdouble)priv->scale_color.red,
+    								 (gdouble)priv->scale_color.green,
+    								 (gdouble)priv->scale_color.blue);
     cairo_stroke (priv->cr);
 
-    cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red/65535, 
-    								 (gdouble)priv->scale_color.green/65535, 
-    								 (gdouble)priv->scale_color.blue/65535, 1.0);		 
+    cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
+    								 (gdouble)priv->scale_color.green,
+    								 (gdouble)priv->scale_color.blue, 1.0);
     cairo_move_to (priv->cr, x_pos, y_pos);
     pango_cairo_show_layout (priv->cr, layout);
 
@@ -1700,9 +1700,9 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 	}
 
 	cairo_save (priv->cr);
-    	cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red/65535, 
-    									 (gdouble)psd->legend_color.green/65535, 
-    									 (gdouble)psd->legend_color.blue/65535);		 
+    	cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red,
+    									 (gdouble)psd->legend_color.green,
+    									 (gdouble)psd->legend_color.blue);
 		cairo_set_line_width (priv->cr, (gdouble)priv->series_line_width);
 		cairo_set_line_cap (priv->cr, CAIRO_LINE_CAP_ROUND);
 
