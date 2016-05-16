@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="GTK/Cairo Line Graph Widget Reference Manual" link="index.html" author="" name="GlgLineGraph" version="2">
+  <chapters>
+    <sub name="GTK/Cairo Line Graph Widget" link="ch01.html">
+      <sub name="GlgLineGraph" link="GlgLineGraph.html"/>
+    </sub>
+  </chapters>
+  <functions>
+    <keyword type="struct" name="GlgLineGraph" link="GlgLineGraph.html#GlgLineGraph-struct"/>
+    <keyword type="enum" name="enum GLGElementID" link="GlgLineGraph.html#GLGElementID"/>
+    <keyword type="function" name="glg_line_graph_new ()" link="GlgLineGraph.html#glg-line-graph-new"/>
+    <keyword type="function" name="glg_line_graph_redraw ()" link="GlgLineGraph.html#glg-line-graph-redraw"/>
+    <keyword type="function" name="glg_line_graph_chart_get_elements ()" link="GlgLineGraph.html#glg-line-graph-chart-get-elements"/>
+    <keyword type="function" name="glg_line_graph_chart_set_elements ()" link="GlgLineGraph.html#glg-line-graph-chart-set-elements"/>
+    <keyword type="function" name="glg_line_graph_chart_set_text ()" link="GlgLineGraph.html#glg-line-graph-chart-set-text"/>
+    <keyword type="function" name="glg_line_graph_chart_set_color ()" link="GlgLineGraph.html#glg-line-graph-chart-set-color"/>
+    <keyword type="function" name="glg_line_graph_chart_set_ranges ()" link="GlgLineGraph.html#glg-line-graph-chart-set-ranges"/>
+    <keyword type="function" name="glg_line_graph_data_series_add ()" link="GlgLineGraph.html#glg-line-graph-data-series-add"/>
+    <keyword type="function" name="glg_line_graph_data_series_add_value ()" link="GlgLineGraph.html#glg-line-graph-data-series-add-value"/>
+    <keyword type="" name="The &quot;chart-set-elements&quot; property" link="GlgLineGraph.html#GlgLineGraph--chart-set-elements"/>
+    <keyword type="" name="The &quot;graph-chart-background&quot; property" link="GlgLineGraph.html#GlgLineGraph--graph-chart-background"/>
+    <keyword type="" name="The &quot;graph-scale-foreground&quot; property" link="GlgLineGraph.html#GlgLineGraph--graph-scale-foreground"/>
+    <keyword type="" name="The &quot;graph-title-foreground&quot; property" link="GlgLineGraph.html#GlgLineGraph--graph-title-foreground"/>
+    <keyword type="" name="The &quot;graph-window-background&quot; property" link="GlgLineGraph.html#GlgLineGraph--graph-window-background"/>
+    <keyword type="" name="The &quot;range-scale-major-x&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-scale-major-x"/>
+    <keyword type="" name="The &quot;range-scale-major-y&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-scale-major-y"/>
+    <keyword type="" name="The &quot;range-scale-minor-x&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-scale-minor-x"/>
+    <keyword type="" name="The &quot;range-scale-minor-y&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-scale-minor-y"/>
+    <keyword type="" name="The &quot;range-tick-major-x&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-tick-major-x"/>
+    <keyword type="" name="The &quot;range-tick-major-y&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-tick-major-y"/>
+    <keyword type="" name="The &quot;range-tick-minor-x&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-tick-minor-x"/>
+    <keyword type="" name="The &quot;range-tick-minor-y&quot; property" link="GlgLineGraph.html#GlgLineGraph--range-tick-minor-y"/>
+    <keyword type="" name="The &quot;series-line-width&quot; property" link="GlgLineGraph.html#GlgLineGraph--series-line-width"/>
+    <keyword type="" name="The &quot;text-title-main&quot; property" link="GlgLineGraph.html#GlgLineGraph--text-title-main"/>
+    <keyword type="" name="The &quot;text-title-xaxis&quot; property" link="GlgLineGraph.html#GlgLineGraph--text-title-xaxis"/>
+    <keyword type="" name="The &quot;text-title-yaxis&quot; property" link="GlgLineGraph.html#GlgLineGraph--text-title-yaxis"/>
+    <keyword type="" name="The &quot;point-selected&quot; signal" link="GlgLineGraph.html#GlgLineGraph-point-selected"/>
+  </functions>
+</book>

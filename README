@@ -1,0 +1,82 @@
+GlgLineGraph (a.k.a cairo version of glinegraph )  July 2007
+
+    A Gtk2/GLib2/cario GUI application which demonstrates the use of GTK+ for
+ producing xy line graphs.  This widget once created allows you to add one or more
+ data series, then add values to those series for ploting.  The X point is assumed based
+ on arrival order.  However, the Y value or position is based one the current scale and
+ the y value itself.  If the charts x scale maximum is 40, or 40 points, the 41+ value is
+ appended to the 40th position after all points are shifted left and out through pos 0.
+ 
+ Packaged as a gtk widget for ease of use.	
+
+ A lgcairo.c example program is included to demonstrate the possible use of the codeset.
+
+There is also gtk-style API documentation in ./src/docs/reference/html/index.html
+
+FEATURES: 
+    * GlgLineGraph API Reference Manual in ./src/docs/reference/html/index.html
+    * Unlimited data series support.
+    * Accurate scaling across a wide range of X & Y scales.
+      - Using values ranges above or below 1.
+    * Rolling data points, if number of x points exceed x-scale. (left shift)
+    * Ability to change chart background color, window backgrounds colors, etc.
+    * Popup Tooltip, via mouse-button-1 click to enable/toggle.
+      - Tooltip overlays top graph title, when present.
+    * Data points are time stamped with current time when added.
+	* Some key debug messages to console with button-3 enable, then button-2 click/toggle.
+	* Auto Size to current window size; i.e. no-scrolling.
+	* point-selected signal tied to tooltip, to display y value under mouse.
+
+REQUIREMENTS:
+
+	Gtk2/Glib-2.8 runtime support. (Created on Fedora Core 6)
+
+	* the following packages may need to be installed to build program and
+	  for runtime of binaries on some platforms.
+
+	glinegraph - { this package }
+	gtk-devel  - { GTK+ version 2.8 is minimum package level required}
+	glib-devel - { version 2.8, packaged with GTK+ } 
+						 		
+
+DISTRIBUTION METHOD:
+
+	Source tar	glinegraph-{version}.tar.bz2
+	GPL2 copyright
+
+INSTALL INFO:
+	Configure Source with 
+			'# ./configure '
+			'# make '
+			'#sudo make install'
+
+INSTRUCTIONS: 
+
+  glinegraph -- GTK+ Cairo Programing Example Application
+    
+    1. Compile program
+	2. Execute sample program
+		- regular cmd: "# lgcairo" 
+
+
+KNOWN BUGS:
+ NONE
+
+MAILING LIST:
+ 											
+ http://sourceforge.net/projects/gapcmon,   choose the 'Help Forum'
+
+WEB SITE:
+
+ http://gapcmon.sourceforge.net/  
+
+CVS CHECKOUT:
+
+ See sourceforge.net project page for cvs info and checkout module "glinegraph"
+
+REPORTING BUGS:
+
+ Please report bugs and feature requests to 
+ "James Scott Jr"<skoona@users.sourceforge.net>
+ or use the HELP Forums on SourceForge for this project.
+ 	

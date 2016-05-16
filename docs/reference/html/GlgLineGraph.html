@@ -1,0 +1,1254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GlgLineGraph</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GTK/Cairo Line Graph Widget Reference Manual">
+<link rel="up" href="ch01.html" title="GTK/Cairo Line Graph Widget">
+<link rel="prev" href="ch01.html" title="GTK/Cairo Line Graph Widget">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="GTK/Cairo Line Graph Widget">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GTK/Cairo Line Graph Widget Reference Manual</th>
+<td>&#160;</td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2990148" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id2918465" class="shortcut">Description</a>
+                  &#160;|&#160;
+                  <a href="#id2940051" class="shortcut">Object Hierarchy</a>
+                  &#160;|&#160;
+                  <a href="#id2981271" class="shortcut">Implemented Interfaces</a>
+                  &#160;|&#160;
+                  <a href="#id2981292" class="shortcut">Properties</a>
+                  &#160;|&#160;
+                  <a href="#id2918440" class="shortcut">Signals</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="GlgLineGraph"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id2990148"></a><span class="refentrytitle">GlgLineGraph</span>
+</h2>
+<p>GlgLineGraph &#8212; A simple xy line graph widget written using only GTK and cairo.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="id2988878"></a><h2>Stability Level</h2>
+Stable, unless otherwise indicated
+</div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;glg_cairo.h&gt;
+
+
+                    <a href="GlgLineGraph.html#GlgLineGraph-struct">GlgLineGraph</a>;
+enum                <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a>;
+<a
+href="/usr/share/gtk-doc/html/gtk/GtkWidget.html"
+>GtkWidget</a>*          <a href="GlgLineGraph.html#glg-line-graph-new">glg_line_graph_new</a>                  (void);
+void                <a href="GlgLineGraph.html#glg-line-graph-redraw">glg_line_graph_redraw</a>               (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph);
+<a href="GlgLineGraph.html#GLGElementID">GLGElementID</a>        <a href="GlgLineGraph.html#glg-line-graph-chart-get-elements">glg_line_graph_chart_get_elements</a>   (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph);
+void                <a href="GlgLineGraph.html#glg-line-graph-chart-set-elements">glg_line_graph_chart_set_elements</a>   (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element);
+<a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            <a href="GlgLineGraph.html#glg-line-graph-chart-set-text">glg_line_graph_chart_set_text</a>       (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_text);
+<a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            <a href="GlgLineGraph.html#glg-line-graph-chart-set-color">glg_line_graph_chart_set_color</a>      (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_color);
+void                <a href="GlgLineGraph.html#glg-line-graph-chart-set-ranges">glg_line_graph_chart_set_ranges</a>     (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_tick_minor,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_tick_major,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_scale_min,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_scale_max,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_tick_minor,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_tick_major,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_scale_min,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_scale_max);
+<a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                <a href="GlgLineGraph.html#glg-line-graph-data-series-add">glg_line_graph_data_series_add</a>      (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_legend_text,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_color_text);
+<a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            <a href="GlgLineGraph.html#glg-line-graph-data-series-add-value">glg_line_graph_data_series_add_value</a>
+                                                        (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> i_series_number,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a> y_value);
+
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2940051"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+
+  <a
+href="/usr/share/gtk-doc/html/gobject/gobject-The-Base-Object-Type.html#GObject"
+>GObject</a>
+   +----<a
+href="/usr/share/gtk-doc/html/gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned"
+>GInitiallyUnowned</a>
+         +----<a
+href="/usr/share/gtk-doc/html/gtk/GtkObject.html"
+>GtkObject</a>
+               +----<a
+href="/usr/share/gtk-doc/html/gtk/GtkWidget.html"
+>GtkWidget</a>
+                     +----<a
+href="/usr/share/gtk-doc/html/gtk/GtkDrawingArea.html"
+>GtkDrawingArea</a>
+                           +----GlgLineGraph
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2981271"></a><h2>Implemented Interfaces</h2>
+<p>
+GlgLineGraph implements
+ AtkImplementorIface.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2981292"></a><h2>Properties</h2>
+<pre class="synopsis">
+
+  "<a href="GlgLineGraph.html#GlgLineGraph--chart-set-elements">chart-set-elements</a>"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--graph-chart-background">graph-chart-background</a>"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--graph-scale-foreground">graph-scale-foreground</a>"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--graph-title-foreground">graph-title-foreground</a>"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--graph-window-background">graph-window-background</a>"  <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-scale-major-x">range-scale-major-x</a>"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-scale-major-y">range-scale-major-y</a>"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-scale-minor-x">range-scale-minor-x</a>"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-scale-minor-y">range-scale-minor-y</a>"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-tick-major-x">range-tick-major-x</a>"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-tick-major-y">range-tick-major-y</a>"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-tick-minor-x">range-tick-minor-x</a>"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--range-tick-minor-y">range-tick-minor-y</a>"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--series-line-width">series-line-width</a>"        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Read / Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--text-title-main">text-title-main</a>"          <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--text-title-xaxis">text-title-xaxis</a>"         <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+  "<a href="GlgLineGraph.html#GlgLineGraph--text-title-yaxis">text-title-yaxis</a>"         <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2918440"></a><h2>Signals</h2>
+<pre class="synopsis">
+
+  "<a href="GlgLineGraph.html#GlgLineGraph-point-selected">point-selected</a>"                                 : Run First
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2918465"></a><h2>Description</h2>
+<p>
+</p>
+<div class="mediaobject"><img src="glg_cairo.png"></div>
+<p>
+</p>
+<p>
+   A Gtk2/GLib2/cairo GUI application which demonstrates the use of GTK+ and cairo for
+producing xy line graphs.  This widget once created allows you to add one or more
+data series, then add values to those series for ploting.  The X point is assumed based
+on arrival order.  However, the Y value or position is based one the current scale and
+the y value itself.  If the charts x scale maximum is 40, or 40 points, the 41+ value is
+appended to the 40th position after pos 0 is dropped - effectively rolling the x points
+from right to left in the chart view.
+</p>
+<p>
+Packaged as a gtk widget for ease of use and easy inclusion into new or existing programs.
+</p>
+<p>
+The GlgLinegraph widget has a gobject property for every control option except creating a 
+new data series - <code class="function">glg_line_graph_series_add()</code>, and adding a value to that series 
+- <code class="function">glg_line_graph_series_add_value()</code>.
+</p>
+<p>
+One signal is available 'point-selected' which outputs the Y value most likely under the 
+mouse ptr.  For correlation purposes the position of the mouse and the position of the Y point
+is given in case two or more points are returned.
+</p>
+<p>
+The scale or range of the chart is dependant on the Y-values.  For value greater than 1, the range/scale
+should be set to whole numbers say 0 to 100.  For values less than 1, use a range/scale of 0 to 1 .
+ 
+The following api's will create a version of this line graph:
+</p>
+<div class="example">
+<a name="id2918527"></a><p class="title"><b>Example&#160;1.&#160;Using a GlgLineGraph with gobject methods.</b></p>
+<div class="example-contents"><pre class="programlisting">
+ #include &lt;glg_cairo.h&gt;
+ ...
+ GlgLineGraph *glg = NULL;
+ gint  i_series_0 = 0, i_series_1 = 0;
+ ...
+ glg = (GlgLineGraph *) g_object_new (GLG_TYPE_LINE_GRAPH, NULL); 
+
+ g_object_set (glg,  "range-tick-minor-x", 1,
+  					"range-tick-major-x", 2,
+  					"range-scale-minor-x", 0,
+  					"range-scale-major-x", 40,
+  					"range-tick-minor-y", 5,
+  					"range-tick-major-y", 10,
+  					"range-scale-minor-y", 0,
+  					"range-scale-major-y", 100,
+  					NULL);
+
+ g_object_set (glg, "chart-set-elements", GLG_TOOLTIP | 
+					GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y |
+               	 	GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |                                     
+               	 	GLG_GRID_LINES | GLG_GRID_MINOR_X | GLG_GRID_MAJOR_X |
+                   	GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y, 
+                   			      NULL); 
+
+ g_object_set (glg, "series-line-width", 3, NULL);
+
+ g_object_set (glg,  "graph-title-foreground",  "blue",
+  					"graph-scale-foreground",  "red",
+   					"graph-chart-background",  "light blue",
+   					"graph-window-background", "white", 
+   					NULL);
+
+ g_object_set (glg,  "text-title-main", "This Top Title Line ",        				
+                     "text-title-yaxis", "This is the Y axis title line.",
+        				"text-title-xaxis", "This is the X axis title line.",
+  			        NULL);
+
+ gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
+ gtk_widget_show_all (window);
+
+
+ i_series_0 = glg_line_graph_data_series_add (glg, "Volts", "red");
+ i_series_1 = glg_line_graph_data_series_add (glg, "Battery", "blue");
+
+ glg_line_graph_data_series_add_value (glg, i_series_0, 66.0);
+ glg_line_graph_data_series_add_value (glg, i_series_0, 73.0);
+
+ glg_line_graph_data_series_add_value (glg, i_series_1, 56.8);
+ glg_line_graph_data_series_add_value (glg, i_series_1, 83.6);
+ 
+
+ glg_line_graph_redraw ( graph );
+  	   
+ </pre></div>
+</div>
+<p><br class="example-break">
+</p>
+<p>
+Or the following standard api method will also work.
+</p>
+<div class="example">
+<a name="id2988879"></a><p class="title"><b>Example&#160;2.&#160;Using a GlgLineGraph with standard apis.</b></p>
+<div class="example-contents"><pre class="programlisting">
+ #include &lt;glg_cairo.h&gt;
+ ...
+GlgLineGraph *glg = NULL;
+gint  i_series_0 = 0, i_series_1 = 0;
+...
+glg = (GlgLineGraph *) glg_line_graph_new();
+
+glg_line_graph_chart_set_ranges (glg, 1,2,0,40, 5,10,0,100);
+
+glg_line_graph_chart_set_elements (glg, GLG_TOOLTIP | 
+			        GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y |
+              	 	GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |                                     
+              	 	GLG_GRID_LINES | GLG_GRID_MINOR_X | GLG_GRID_MAJOR_X |
+                  	GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y 
+                  			     ); 
+
+glg_line_graph_chart_set_color (graph, GLG_TITLE,  "blue");
+glg_line_graph_chart_set_color (graph, GLG_SCALE,  "read");
+glg_line_graph_chart_set_color (graph, GLG_CHART,  "light blue");
+glg_line_graph_chart_set_color (graph, GLG_WINDOW, "white");	
+
+glg_line_graph_chart_set_text (glg, GLG_TITLE_T, "This Top Title Line " );	
+       				
+glg_line_graph_chart_set_text (glg, GLG_TITLE_Y, "This is the y label." ); 	
+       					 
+glg_line_graph_chart_set_text (glg, GLG_TITLE_X, "This is the x label" );
+
+gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
+gtk_widget_show_all (window);
+
+i_series_0 = glg_line_graph_data_series_add (glg, "Volts", "red");
+i_series_1 = glg_line_graph_data_series_add (glg, "Battery", "blue");
+
+glg_line_graph_data_series_add_value (glg, i_series_0, 66.0);
+glg_line_graph_data_series_add_value (glg, i_series_0, 73.0);
+
+glg_line_graph_data_series_add_value (glg, i_series_1, 56.8);
+glg_line_graph_data_series_add_value (glg, i_series_1, 83.6);
+
+glg_line_graph_redraw ( graph );
+	   
+ </pre></div>
+</div>
+<p><br class="example-break">
+    
+</p>
+<p>
+A 'lgcairo.c' demonstration proram is included to illustrate how to quickly use the widget.
+</p>
+<p>
+<span class="emphasis"><em>FEATURES</em></span>
+</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+ Unlimited data series support.
+ </li>
+<li>
+ Accurate scaling across a wide range of X &amp; Y scales.
+ </li>
+<li>
+ Using values ranges above or below 1.
+ </li>
+<li>
+ Rolling data points, if number of x points exceed x-scale. (left shift)
+ </li>
+<li>
+ Ability to change chart background color, window backgrounds colors, etc.
+ </li>
+<li>
+ Popup Tooltip, via mouse-button-1 click to enable/toggle. Tooltip overlays top graph title, when present.
+ </li>
+<li>
+ Data points are time stamped with current time when added.
+ </li>
+<li>
+ Some key debug messages to console with button-3 enable, then button-2 click/toggle.
+ </li>
+<li>
+ Auto Size to current window size; i.e. no-scrolling.
+ </li>
+</ul></div>
+<p>
+</p>
+<p>
+</p>
+<div class="example">
+<a name="id2918671"></a><p class="title"><b>Example&#160;3.&#160;A sample program</b></p>
+<div class="example-contents"><pre class="programlisting">
+   
+ </pre></div>
+</div>
+<p><br class="example-break"></p>
+<p>
+
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2918695"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id3006993"></a><h3>
+<a name="GlgLineGraph-struct"></a>GlgLineGraph</h3>
+<a class="indexterm" name="id3007003"></a><pre class="programlisting">typedef struct _GlgLineGraph GlgLineGraph;</pre>
+<p>
+Main widget structure</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007021"></a><h3>
+<a name="GLGElementID"></a>enum GLGElementID</h3>
+<a class="indexterm" name="id3007031"></a><pre class="programlisting">typedef enum _GLG_Graph_Elements {
+  /* enable chart flags and title keys */
+  GLG_ELEMENT_NONE = 1 &lt;&lt; 0,
+  GLG_TITLE_X = 1 &lt;&lt; 1,
+  GLG_NO_TITLE_X = 0 &lt;&lt; 1,
+  GLG_TITLE_Y = 1 &lt;&lt; 2,
+  GLG_NO_TITLE_Y = 0 &lt;&lt; 2,
+  GLG_TITLE_T = 1 &lt;&lt; 3,
+  GLG_NO_TITLE_T = 0 &lt;&lt; 3,
+
+  /* enable chart attributes flag */  
+  GLG_GRID_LABELS_X = 1 &lt;&lt; 4,
+  GLG_NO_GRID_LABELS_X = 0 &lt;&lt; 4,
+  GLG_GRID_LABELS_Y = 1 &lt;&lt; 5,
+  GLG_NO_GRID_LABELS_Y = 0 &lt;&lt; 5,
+
+  /* enable tooltip flag */
+  GLG_TOOLTIP = 1 &lt;&lt; 6,
+  GLG_NO_TOOLTIP = 0 &lt;&lt; 6,  
+  
+  /* enabled chart attributes */
+  GLG_GRID_LINES   = 1 &lt;&lt; 7,
+  GLG_NO_GRID_LINES   = 0 &lt;&lt; 7,
+  GLG_GRID_MINOR_X = 1 &lt;&lt; 8,
+  GLG_NO_GRID_MINOR_X = 0 &lt;&lt; 8,
+  GLG_GRID_MAJOR_X = 1 &lt;&lt; 9,
+  GLG_NO_GRID_MAJOR_X = 0 &lt;&lt; 9,
+  GLG_GRID_MINOR_Y = 1 &lt;&lt; 10,
+  GLG_NO_GRID_MINOR_Y = 0 &lt;&lt; 10,
+  GLG_GRID_MAJOR_Y = 1 &lt;&lt; 11,
+  GLG_NO_GRID_MAJOR_Y = 0 &lt;&lt; 11,
+  
+  /* chart color key -- used to change window color only */
+  GLG_SCALE   = 1 &lt;&lt; 12,  
+  GLG_TITLE   = 1 &lt;&lt; 13,
+  GLG_WINDOW  = 1 &lt;&lt; 14,  
+  GLG_CHART   = 1 &lt;&lt; 15, 
+
+  /* Reserved */   
+  GLG_RESERVED_OFF = 0 &lt;&lt; 16,
+  GLG_RESERVED_ON  = 1 &lt;&lt; 16      
+} GLGElementID;
+</pre>
+<p>
+Communication params for interface APIs</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a name="GLG-ELEMENT-NONE:CAPS"></a><code class="literal">GLG_ELEMENT_NONE</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-TITLE-X:CAPS"></a><code class="literal">GLG_TITLE_X</code></span></td>
+<td>     Enables display of the top chart title
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-TITLE-X:CAPS"></a><code class="literal">GLG_NO_TITLE_X</code></span></td>
+<td>  Disables display of the top chart title
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-TITLE-Y:CAPS"></a><code class="literal">GLG_TITLE_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-TITLE-Y:CAPS"></a><code class="literal">GLG_NO_TITLE_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-TITLE-T:CAPS"></a><code class="literal">GLG_TITLE_T</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-TITLE-T:CAPS"></a><code class="literal">GLG_NO_TITLE_T</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-LABELS-X:CAPS"></a><code class="literal">GLG_GRID_LABELS_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-LABELS-X:CAPS"></a><code class="literal">GLG_NO_GRID_LABELS_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-LABELS-Y:CAPS"></a><code class="literal">GLG_GRID_LABELS_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-LABELS-Y:CAPS"></a><code class="literal">GLG_NO_GRID_LABELS_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-TOOLTIP:CAPS"></a><code class="literal">GLG_TOOLTIP</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-TOOLTIP:CAPS"></a><code class="literal">GLG_NO_TOOLTIP</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-LINES:CAPS"></a><code class="literal">GLG_GRID_LINES</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-LINES:CAPS"></a><code class="literal">GLG_NO_GRID_LINES</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-MINOR-X:CAPS"></a><code class="literal">GLG_GRID_MINOR_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-MINOR-X:CAPS"></a><code class="literal">GLG_NO_GRID_MINOR_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-MAJOR-X:CAPS"></a><code class="literal">GLG_GRID_MAJOR_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-MAJOR-X:CAPS"></a><code class="literal">GLG_NO_GRID_MAJOR_X</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-MINOR-Y:CAPS"></a><code class="literal">GLG_GRID_MINOR_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-MINOR-Y:CAPS"></a><code class="literal">GLG_NO_GRID_MINOR_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-GRID-MAJOR-Y:CAPS"></a><code class="literal">GLG_GRID_MAJOR_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-NO-GRID-MAJOR-Y:CAPS"></a><code class="literal">GLG_NO_GRID_MAJOR_Y</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-SCALE:CAPS"></a><code class="literal">GLG_SCALE</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-TITLE:CAPS"></a><code class="literal">GLG_TITLE</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-WINDOW:CAPS"></a><code class="literal">GLG_WINDOW</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-CHART:CAPS"></a><code class="literal">GLG_CHART</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-RESERVED-OFF:CAPS"></a><code class="literal">GLG_RESERVED_OFF</code></span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GLG-RESERVED-ON:CAPS"></a><code class="literal">GLG_RESERVED_ON</code></span></td>
+<td>
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007619"></a><h3>
+<a name="glg-line-graph-new"></a>glg_line_graph_new ()</h3>
+<a class="indexterm" name="id3007629"></a><pre class="programlisting"><a
+href="/usr/share/gtk-doc/html/gtk/GtkWidget.html"
+>GtkWidget</a>*          glg_line_graph_new                  (void);</pre>
+<p>
+Creates a new line graph widget</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>  a pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget 
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007672"></a><h3>
+<a name="glg-line-graph-redraw"></a>glg_line_graph_redraw ()</h3>
+<a class="indexterm" name="id3007682"></a><pre class="programlisting">void                glg_line_graph_redraw               (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph);</pre>
+<p>
+Updates the current graph showing new changes.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007734"></a><h3>
+<a name="glg-line-graph-chart-get-elements"></a>glg_line_graph_chart_get_elements ()</h3>
+<a class="indexterm" name="id3007747"></a><pre class="programlisting"><a href="GlgLineGraph.html#GLGElementID">GLGElementID</a>        glg_line_graph_chart_get_elements   (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph);</pre>
+<p>
+Retrieves the current draw setting for the graph.  AND it with the desired value to test
+if what your after is present.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a GlglineGraph widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> gint containing all current draw flags as defined in <a href="GlgLineGraph.html#GLGElementID"><span class="type">GLGElementID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007810"></a><h3>
+<a name="glg-line-graph-chart-set-elements"></a>glg_line_graph_chart_set_elements ()</h3>
+<a class="indexterm" name="id3007824"></a><pre class="programlisting">void                glg_line_graph_chart_set_elements   (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element);</pre>
+<p>
+Controls whether the grids, labels, tooltip, and titles will appear on the chart.
+All graphs are created with the following defaults; 
+<a href="GlgLineGraph.html#GLG-TOOLTIP:CAPS"><code class="literal">GLG_TOOLTIP</code></a> | 
+<a href="GlgLineGraph.html#GLG-GRID-LABELS-X:CAPS"><code class="literal">GLG_GRID_LABELS_X</code></a> | <a href="GlgLineGraph.html#GLG-GRID-LABELS-Y:CAPS"><code class="literal">GLG_GRID_LABELS_Y</code></a> | <a href="GlgLineGraph.html#GLG-TITLE-T:CAPS"><code class="literal">GLG_TITLE_T</code></a> | <a href="GlgLineGraph.html#GLG-TITLE-X:CAPS"><code class="literal">GLG_TITLE_X</code></a> | <a href="GlgLineGraph.html#GLG-TITLE-Y:CAPS"><code class="literal">GLG_TITLE_Y</code></a> | 
+<a href="GlgLineGraph.html#GLG-GRID-LINES:CAPS"><code class="literal">GLG_GRID_LINES</code></a> | <a href="GlgLineGraph.html#GLG-GRID-MINOR-X:CAPS"><code class="literal">GLG_GRID_MINOR_X</code></a> | <a href="GlgLineGraph.html#GLG-GRID-MAJOR-X:CAPS"><code class="literal">GLG_GRID_MAJOR_X</code></a> | <a href="GlgLineGraph.html#GLG-GRID-MINOR-Y:CAPS"><code class="literal">GLG_GRID_MINOR_Y</code></a> | <a href="GlgLineGraph.html#GLG-GRID-MAJOR-Y:CAPS"><code class="literal">GLG_GRID_MAJOR_Y</code></a></p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <span class="type">GlglineGraph</span> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>element</code></em>&#160;:</span></td>
+<td> An or'ed list of <a href="GlgLineGraph.html#GLGElementID"><span class="type">GLGElementID</span></a> indicating what graph elements should be drawn
+to the screen. 
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3007993"></a><h3>
+<a name="glg-line-graph-chart-set-text"></a>glg_line_graph_chart_set_text ()</h3>
+<a class="indexterm" name="id3008005"></a><pre class="programlisting"><a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            glg_line_graph_chart_set_text       (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_text);</pre>
+<p>
+Copy (without freeing) pch_text into place to be used as the graph title. PangoMarkup is
+also supported.
+ 
+<a href="GlgLineGraph.html#GLG-TITLE-X:CAPS"><span class="type">GLG_TITLE_X</span></a> - Bottom x axis title
+<a href="GlgLineGraph.html#GLG-TITLE-Y:CAPS"><span class="type">GLG_TITLE_Y</span></a> - Left vertical y axis title
+<a href="GlgLineGraph.html#GLG-TITLE-T:CAPS"><span class="type">GLG_TITLE_T</span></a> - Top and considered main title on x axis</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>element</code></em>&#160;:</span></td>
+<td> <a href="GlgLineGraph.html#GLGElementID"><span class="type">GLGElementID</span></a> of the Title 
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>pch_text</code></em>&#160;:</span></td>
+<td> gchar* string to set in title.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> gboolean TRUE if copied, FALSE if copy failed.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008134"></a><h3>
+<a name="glg-line-graph-chart-set-color"></a>glg_line_graph_chart_set_color ()</h3>
+<a class="indexterm" name="id3008146"></a><pre class="programlisting"><a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            glg_line_graph_chart_set_color      (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a href="GlgLineGraph.html#GLGElementID">GLGElementID</a> element,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_color);</pre>
+<p>
+Copy (without freeing) pch_color into place to be used as the graph element color. 
+<a href="GlgLineGraph.html#GLG-SCALE:CAPS"><span class="type">GLG_SCALE</span></a>  - x/y interger legends color {default black}
+<a href="GlgLineGraph.html#GLG-TITLE:CAPS"><span class="type">GLG_TITLE</span></a>  - Main graph title. {default light blue}
+<a href="GlgLineGraph.html#GLG-WINDOW:CAPS"><span class="type">GLG_WINDOW</span></a> - Graph window background color, and grid foreground. {default white}
+<a href="GlgLineGraph.html#GLG-CHART:CAPS"><span class="type">GLG_CHART</span></a>  - Graph plot area background. {default light blue}</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>element</code></em>&#160;:</span></td>
+<td> <a href="GlgLineGraph.html#GLGElementID"><span class="type">GLGElementID</span></a> of the Window Element 
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>pch_color</code></em>&#160;:</span></td>
+<td> gchar* string with name of color.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> gboolean TRUE if copied, FALSE if copy failed.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008284"></a><h3>
+<a name="glg-line-graph-chart-set-ranges"></a>glg_line_graph_chart_set_ranges ()</h3>
+<a class="indexterm" name="id3008296"></a><pre class="programlisting">void                glg_line_graph_chart_set_ranges     (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_tick_minor,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_tick_major,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_scale_min,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> x_scale_max,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_tick_minor,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_tick_major,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_scale_min,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> y_scale_max);</pre>
+<p>
+Sets the X and Y ticks and scales for the graph grid area.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>x_tick_minor</code></em>&#160;:</span></td>
+<td> number of minor divisions for x scale
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>x_tick_major</code></em>&#160;:</span></td>
+<td> number of major divisions for x scale
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>x_scale_min</code></em>&#160;:</span></td>
+<td>  minimum x scale value or starting point
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>x_scale_max</code></em>&#160;:</span></td>
+<td>  maximum x scale value or ending point
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_tick_minor</code></em>&#160;:</span></td>
+<td> number of minor divisions for y scale
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_tick_major</code></em>&#160;:</span></td>
+<td> number of major divisions for y scale
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_scale_min</code></em>&#160;:</span></td>
+<td>  minimum y scale value or starting point
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_scale_max</code></em>&#160;:</span></td>
+<td>  maximum y scale value or ending point
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008508"></a><h3>
+<a name="glg-line-graph-data-series-add"></a>glg_line_graph_data_series_add ()</h3>
+<a class="indexterm" name="id3008520"></a><pre class="programlisting"><a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                glg_line_graph_data_series_add      (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_legend_text,
+                                                         const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *pch_color_text);</pre>
+<p>
+Allocates space for another data series of y-values and returns the 
+series number of this dataset added which you must keep track of
+to add values.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <span class="type">GlglineGraph</span> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>pch_legend_text</code></em>&#160;:</span></td>
+<td> The name of the data series
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>pch_color_text</code></em>&#160;:</span></td>
+<td> A string containing the line color to be used.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> gint  The series number of this dataset added ( range 0 thru n )
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008625"></a><h3>
+<a name="glg-line-graph-data-series-add-value"></a>glg_line_graph_data_series_add_value ()</h3>
+<a class="indexterm" name="id3008638"></a><pre class="programlisting"><a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"
+>gboolean</a>            glg_line_graph_data_series_add_value
+                                                        (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *graph,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> i_series_number,
+                                                         <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a> y_value);</pre>
+<p>
+Add a single y value to the requested data series.
+auto indexes the value if x-scale max is reached (appends to the end)
+The X value is implied to be the current count of Y-values added.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>graph</code></em>&#160;:</span></td>
+<td> pointer to a <a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a> widget
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>i_series_number</code></em>&#160;:</span></td>
+<td> The data series to add value to.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_value</code></em>&#160;:</span></td>
+<td> The value to add.  Current range is 0.0 to y-max-scale
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> gboolean  TRUE if value was added, FALSE if add failed.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="id3008744"></a><h2>Property Details</h2>
+<div class="refsect2" lang="en">
+<a name="id3008754"></a><h3>
+<a name="GlgLineGraph--chart-set-elements"></a>The "<code class="literal">chart-set-elements</code>" property</h3>
+<a class="indexterm" name="id3008768"></a><pre class="programlisting">  "chart-set-elements"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>Enable showing these elements of the chart body.</p>
+<p>Allowed values: [0,65536]</p>
+<p>Default value: 128</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008795"></a><h3>
+<a name="GlgLineGraph--graph-chart-background"></a>The "<code class="literal">graph-chart-background</code>" property</h3>
+<a class="indexterm" name="id3008810"></a><pre class="programlisting">  "graph-chart-background"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Chart inside fill color.</p>
+<p>Default value: "light blue"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008833"></a><h3>
+<a name="GlgLineGraph--graph-scale-foreground"></a>The "<code class="literal">graph-scale-foreground</code>" property</h3>
+<a class="indexterm" name="id3008847"></a><pre class="programlisting">  "graph-scale-foreground"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>X and Y chart scale foreground font color.</p>
+<p>Default value: "black"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008871"></a><h3>
+<a name="GlgLineGraph--graph-title-foreground"></a>The "<code class="literal">graph-title-foreground</code>" property</h3>
+<a class="indexterm" name="id3008886"></a><pre class="programlisting">  "graph-title-foreground"   <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Main title foreground color.</p>
+<p>Default value: "blue"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008910"></a><h3>
+<a name="GlgLineGraph--graph-window-background"></a>The "<code class="literal">graph-window-background</code>" property</h3>
+<a class="indexterm" name="id3008924"></a><pre class="programlisting">  "graph-window-background"  <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Window background fill color.</p>
+<p>Default value: "white"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008947"></a><h3>
+<a name="GlgLineGraph--range-scale-major-x"></a>The "<code class="literal">range-scale-major-x</code>" property</h3>
+<a class="indexterm" name="id3008962"></a><pre class="programlisting">  "range-scale-major-x"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>x major scale range.</p>
+<p>Allowed values: [1,1000]</p>
+<p>Default value: 100</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3008988"></a><h3>
+<a name="GlgLineGraph--range-scale-major-y"></a>The "<code class="literal">range-scale-major-y</code>" property</h3>
+<a class="indexterm" name="id3009002"></a><pre class="programlisting">  "range-scale-major-y"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>Y major scale range.</p>
+<p>Allowed values: [1,1000]</p>
+<p>Default value: 100</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009028"></a><h3>
+<a name="GlgLineGraph--range-scale-minor-x"></a>The "<code class="literal">range-scale-minor-x</code>" property</h3>
+<a class="indexterm" name="id3009042"></a><pre class="programlisting">  "range-scale-minor-x"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>x minor scale range.</p>
+<p>Allowed values: [0,100]</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009068"></a><h3>
+<a name="GlgLineGraph--range-scale-minor-y"></a>The "<code class="literal">range-scale-minor-y</code>" property</h3>
+<a class="indexterm" name="id3009083"></a><pre class="programlisting">  "range-scale-minor-y"      <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>Y minor scale range.</p>
+<p>Allowed values: [0,100]</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009109"></a><h3>
+<a name="GlgLineGraph--range-tick-major-x"></a>The "<code class="literal">range-tick-major-x</code>" property</h3>
+<a class="indexterm" name="id3009123"></a><pre class="programlisting">  "range-tick-major-x"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>x major ticks on scale.</p>
+<p>Allowed values: [1,1000]</p>
+<p>Default value: 10</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009149"></a><h3>
+<a name="GlgLineGraph--range-tick-major-y"></a>The "<code class="literal">range-tick-major-y</code>" property</h3>
+<a class="indexterm" name="id3009164"></a><pre class="programlisting">  "range-tick-major-y"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>Y major ticks on scale.</p>
+<p>Allowed values: [1,1000]</p>
+<p>Default value: 10</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009190"></a><h3>
+<a name="GlgLineGraph--range-tick-minor-x"></a>The "<code class="literal">range-tick-minor-x</code>" property</h3>
+<a class="indexterm" name="id3009204"></a><pre class="programlisting">  "range-tick-minor-x"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>x minor ticks on scale.</p>
+<p>Allowed values: [1,100]</p>
+<p>Default value: 5</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009230"></a><h3>
+<a name="GlgLineGraph--range-tick-minor-y"></a>The "<code class="literal">range-tick-minor-y</code>" property</h3>
+<a class="indexterm" name="id3009244"></a><pre class="programlisting">  "range-tick-minor-y"       <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Write</pre>
+<p>Y minor ticks on scale.</p>
+<p>Allowed values: [1,100]</p>
+<p>Default value: 5</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009270"></a><h3>
+<a name="GlgLineGraph--series-line-width"></a>The "<code class="literal">series-line-width</code>" property</h3>
+<a class="indexterm" name="id3009285"></a><pre class="programlisting">  "series-line-width"        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a>                  : Read / Write</pre>
+<p>Width of line drawn for data series.</p>
+<p>Allowed values: [1,10]</p>
+<p>Default value: 2</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009312"></a><h3>
+<a name="GlgLineGraph--text-title-main"></a>The "<code class="literal">text-title-main</code>" property</h3>
+<a class="indexterm" name="id3009327"></a><pre class="programlisting">  "text-title-main"          <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Title at top of graph on the X axis.</p>
+<p>Default value: "&lt;big&gt;&lt;b&gt;Top Title&lt;/b&gt;&lt;/big&gt;"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009353"></a><h3>
+<a name="GlgLineGraph--text-title-xaxis"></a>The "<code class="literal">text-title-xaxis</code>" property</h3>
+<a class="indexterm" name="id3009370"></a><pre class="programlisting">  "text-title-xaxis"         <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Title at bottom of graph on the X axis.</p>
+<p>Default value: "&lt;i&gt;X Axis Title&lt;/i&gt;"</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id3009396"></a><h3>
+<a name="GlgLineGraph--text-title-yaxis"></a>The "<code class="literal">text-title-yaxis</code>" property</h3>
+<a class="indexterm" name="id3009413"></a><pre class="programlisting">  "text-title-yaxis"         <a
+href="/usr/share/gtk-doc/html/gobject/gobject-Standard-Parameter-and-Value-Types.html#gchararray"
+>gchararray</a>            : Write</pre>
+<p>Title on left of graph on the Y axis.</p>
+<p>Default value: "Y Axis Title"</p>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="id3009441"></a><h2>Signal Details</h2>
+<div class="refsect2" lang="en">
+<a name="id3009452"></a><h3>
+<a name="GlgLineGraph-point-selected"></a>The "point-selected" signal</h3>
+<a class="indexterm" name="id3009462"></a><pre class="programlisting">void                user_function                      (<a href="GlgLineGraph.html" title="GlgLineGraph">GlgLineGraph</a> *widget,
+                                                        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a>       x_value,
+                                                        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a>       y_value,
+                                                        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a>       point_y_pos,
+                                                        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gdouble"
+>gdouble</a>       mouse_y_pos,
+                                                        <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gpointer"
+>gpointer</a>      user_data)        : Run First</pre>
+<p>
+The ::point-selected signal is emitted after the toggle-on mouse1 click, and sends
+values closest to the mouse pointer.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>widget</code></em>&#160;:</span></td>
+<td> the line graph widget that received the signal
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>x_value</code></em>&#160;:</span></td>
+<td> x value on the chart
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>y_value</code></em>&#160;:</span></td>
+<td> y value on the chart
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>point_y_pos</code></em>&#160;:</span></td>
+<td> pixel position of y value on chart
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>mouse_y_pos</code></em>&#160;:</span></td>
+<td> pixel position of the mouse ptr on chart
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td>user data set when the signal handler was connected.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="id3009625"></a><h2>See Also</h2>
+<a href="GlgLineGraph.html" title="GlgLineGraph"><span class="type">GlgLineGraph</span></a>
+</div>
+</div>
+</body>
+</html>

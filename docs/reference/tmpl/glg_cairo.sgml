@@ -1,0 +1,250 @@
+<!-- ##### SECTION Title ##### -->
+GlgLineGraph
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GlgLineGraph ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SIGNAL GlgLineGraph::point-selected ##### -->
+<para>
+
+</para>
+
+@glglinegraph: the object which received the signal.
+@arg1: 
+@arg2: 
+@arg3: 
+@arg4: 
+
+<!-- ##### ARG GlgLineGraph:chart-set-elements ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:graph-chart-background ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:graph-scale-foreground ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:graph-title-foreground ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:graph-window-background ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-scale-major-x ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-scale-major-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-scale-minor-x ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-scale-minor-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-tick-major-x ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-tick-major-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-tick-minor-x ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:range-tick-minor-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:series-line-width ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:text-title-main ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:text-title-xaxis ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GlgLineGraph:text-title-yaxis ##### -->
+<para>
+
+</para>
+
+<!-- ##### ENUM GLGElementID ##### -->
+<para>
+
+</para>
+
+@GLG_ELEMENT_NONE: 
+@GLG_TITLE_X: 
+@GLG_NO_TITLE_X: 
+@GLG_TITLE_Y: 
+@GLG_NO_TITLE_Y: 
+@GLG_TITLE_T: 
+@GLG_NO_TITLE_T: 
+@GLG_GRID_LABELS_X: 
+@GLG_NO_GRID_LABELS_X: 
+@GLG_GRID_LABELS_Y: 
+@GLG_NO_GRID_LABELS_Y: 
+@GLG_TOOLTIP: 
+@GLG_NO_TOOLTIP: 
+@GLG_GRID_LINES: 
+@GLG_NO_GRID_LINES: 
+@GLG_GRID_MINOR_X: 
+@GLG_NO_GRID_MINOR_X: 
+@GLG_GRID_MAJOR_X: 
+@GLG_NO_GRID_MAJOR_X: 
+@GLG_GRID_MINOR_Y: 
+@GLG_NO_GRID_MINOR_Y: 
+@GLG_GRID_MAJOR_Y: 
+@GLG_NO_GRID_MAJOR_Y: 
+@GLG_SCALE: 
+@GLG_TITLE: 
+@GLG_WINDOW: 
+@GLG_CHART: 
+@GLG_RESERVED_OFF: 
+@GLG_RESERVED_ON: 
+
+<!-- ##### FUNCTION glg_line_graph_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION glg_line_graph_redraw ##### -->
+<para>
+
+</para>
+
+@graph: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_get_elements ##### -->
+<para>
+
+</para>
+
+@graph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_elements ##### -->
+<para>
+
+</para>
+
+@graph: 
+@element: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_text ##### -->
+<para>
+
+</para>
+
+@graph: 
+@element: 
+@pch_text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_color ##### -->
+<para>
+
+</para>
+
+@graph: 
+@element: 
+@pch_color: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_ranges ##### -->
+<para>
+
+</para>
+
+@graph: 
+@x_tick_minor: 
+@x_tick_major: 
+@x_scale_min: 
+@x_scale_max: 
+@y_tick_minor: 
+@y_tick_major: 
+@y_scale_min: 
+@y_scale_max: 
+
+
+<!-- ##### FUNCTION glg_line_graph_data_series_add ##### -->
+<para>
+
+</para>
+
+@graph: 
+@pch_legend_text: 
+@pch_color_text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glg_line_graph_data_series_add_value ##### -->
+<para>
+
+</para>
+
+@graph: 
+@i_series_number: 
+@y_value: 
+@Returns: 
+
+

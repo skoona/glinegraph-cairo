@@ -1,0 +1,15 @@
+* Wed Jul 04, 2007   Release 0.3.1-0
+- Major rewrite of widget components
+- contains: (glg) widget style routines for easier integration
+		    enhanced with Cairo Graphics Engine support
+
+* Tue Jul 03, 2007   Release 0.3.0-0
+- Major rewrite of widget components
+- contains: (glg) widget style routines for easier integration
+		    considering an enhancement to support Cairo Engine
+            
+* Wed May 24, 2006   Release 0.2.0-0
+- First public release of glinegraph package
+- contains: (g_lgraph) regular routines for direct integration
+            (sklinegraph) widget style routines for easier integration
+

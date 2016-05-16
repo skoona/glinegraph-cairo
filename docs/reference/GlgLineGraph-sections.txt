@@ -1,0 +1,25 @@
+<SECTION>
+<FILE>glg_cairo</FILE>
+<TITLE>GlgLineGraph</TITLE>
+GlgLineGraph
+GLGElementID
+glg_line_graph_new
+glg_line_graph_redraw
+glg_line_graph_chart_get_elements
+glg_line_graph_chart_set_elements
+glg_line_graph_chart_set_text
+glg_line_graph_chart_set_color
+glg_line_graph_chart_set_ranges
+glg_line_graph_data_series_add
+glg_line_graph_data_series_add_value
+<SUBSECTION Standard>
+GlgLineGraphClass
+GLG_LINE_GRAPH
+GLG_IS_LINE_GRAPH
+GLG_TYPE_LINE_GRAPH
+glg_line_graph_get_type
+GLG_LINE_GRAPH_CLASS
+GLG_IS_LINE_GRAPH_CLASS
+GLG_LINE_GRAPH_GET_CLASS
+</SECTION>
+
