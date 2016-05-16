@@ -28,7 +28,6 @@
 #ifndef __GLG_LINE_GRAPH_H__
 #define __GLG_LINE_GRAPH_H__
 
-
 G_BEGIN_DECLS
 
 typedef struct _GlgLineGraph  GlgLineGraph;

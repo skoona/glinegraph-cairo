@@ -246,7 +246,7 @@ typedef struct _GLG_SERIES {
     gint        i_max_points;   /* 1 based */
     gchar       ch_legend_text[GLG_MAX_STRING];
     gchar       ch_legend_color[GLG_MAX_STRING];
-    GdkColor    legend_color;
+    GdkRGBA    legend_color;
     gdouble     d_max_value;
     gdouble     d_min_value;
     gdouble    *lg_point_dvalue;    /* array of doubles y values zero based, x = index */
@@ -277,18 +277,21 @@ typedef struct _GlgLineGraphPrivate
     GLGElementID lgflags;         /* things to be drawn */
     /* new cairo design */
     cairo_t 	 *cr;    
-    GdkRectangle page_title_box;
-    GdkRectangle tooltip_box;
-    GdkRectangle x_label_box;
-    GdkRectangle y_label_box;
-    GdkRectangle plot_box;      /* actual size of graph area */
-    GdkRectangle page_box;      /* entire window size */
+    cairo_rectangle_int_t page_title_box;
+    cairo_rectangle_int_t tooltip_box;
+    cairo_rectangle_int_t x_label_box;
+    cairo_rectangle_int_t y_label_box;
+    cairo_rectangle_int_t plot_box;      /* actual size of graph area */
+    cairo_rectangle_int_t page_box;      /* entire window size */
     /* element colors */
-    GdkColor    window_color;    /* actual gdk color -- needs to be color/65535 to match cairo scale 0-1.0  */
-    GdkColor    chart_color;
-    GdkColor    scale_color;
-    GdkColor    title_color;
-    GdkColor    series_color;
+    GdkRGBA    window_color;    /* actual gdk color -- needs to be color/65535 to match cairo scale 0-1.0  */
+    GdkRGBA    chart_color;
+    GdkRGBA    scale_color;
+    GdkRGBA    title_color;
+    GdkRGBA    series_color;
+    /* mouse device */
+    GdkDeviceManager *device_manager;
+    GdkDevice        *device_pointer;
     /* data points and tooltip info */
     gint        i_points_available;
     gint        i_num_series;   /* 1 based */
@@ -363,14 +366,14 @@ G_DEFINE_TYPE (GlgLineGraph, glg_line_graph, GTK_TYPE_DRAWING_AREA);
 /*
  * Private routines for graph widget internal functions
 */
-static void 	glg_line_graph_class_init (GlgLineGraphClass *klass);
+//static void 	glg_line_graph_class_init (GlgLineGraphClass *klass);
 static void 	glg_line_graph_init (GlgLineGraph *graph);
-static void 	glg_line_graph_destroy (GtkObject *object);
+static void 	glg_line_graph_destroy (GtkWidget *object);
 static void 	glg_line_graph_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void 	glg_line_graph_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 
 static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfigure *event);
-static gboolean glg_line_graph_expose (GtkWidget *graph, GdkEventExpose *event);
+static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr);
 static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventButton * ev);
 static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEventMotion * ev);
 
@@ -378,8 +381,8 @@ static void 	glg_line_graph_draw (GtkWidget *graph);
 static gint 	glg_line_graph_draw_tooltip (GlgLineGraph *graph);
 static void 	glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph);
 static void 	glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph);
-static gint 	glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pch_text, GdkRectangle * rect);
-static gint 	glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar * pch_text, GdkRectangle * rect);
+static gint 	glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pch_text, cairo_rectangle_int_t * rect);
+static gint 	glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar * pch_text, cairo_rectangle_int_t * rect);
 static gint 	glg_line_graph_draw_grid_lines (GlgLineGraph *graph);
 
 static gint 	glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES psd);
@@ -397,7 +400,7 @@ static void _glg_cairo_marshal_VOID__DOUBLE_DOUBLE_DOUBLE_DOUBLE (GClosure     *
 /*
  * Global diagnostics varible
 */
-static gboolean glg_flag_debug = TRUE;
+static gboolean glg_flag_debug;
 
 enum
 {
@@ -414,8 +417,9 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 {
 	GObjectClass 	*obj_class 		 = G_OBJECT_CLASS (klass);
 	GtkWidgetClass  *widget_class 	 = GTK_WIDGET_CLASS (klass);
-    GtkObjectClass  *gtkobject_class = GTK_OBJECT_CLASS (klass);
     gint			elements = GLG_GRID_LINES;      
+
+    glg_flag_debug = TRUE;
 
 	if (glg_flag_debug) {
 		g_debug ("===> glg_line_graph_class_init()");
@@ -425,12 +429,11 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
     obj_class->set_property = glg_line_graph_set_property;
     obj_class->get_property = glg_line_graph_get_property;
 
-	/* GtkObject signal overrides */
-	gtkobject_class->destroy    = glg_line_graph_destroy;
+    widget_class->destroy    = glg_line_graph_destroy;
 
 	/* GtkWidget signals overrides */
 	widget_class->configure_event 		= glg_line_graph_configure_event;
-	widget_class->expose_event 			= glg_line_graph_expose;
+	widget_class->draw      			= glg_line_graph_expose;
 	widget_class->motion_notify_event 	= glg_line_graph_motion_notify_event;    
   	widget_class->button_press_event  	= glg_line_graph_button_press_event;
 
@@ -597,6 +600,11 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	
+	priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (GTK_WIDGET (graph)) );
+	priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
+
+	glg_flag_debug = TRUE;
+
 	gtk_widget_add_events (GTK_WIDGET (graph), GDK_BUTTON_PRESS_MASK | 
 											   GDK_BUTTON_RELEASE_MASK |
 											   GDK_POINTER_MOTION_MASK |											   
@@ -754,14 +762,13 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
  * This routine is the master paint routine for the line graph
  * it sets up the deminsions of the space and call DRAW to get the graph done
 */
-static gboolean glg_line_graph_expose (GtkWidget *graph, GdkEventExpose *event)
+static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
 {
 	GlgLineGraphPrivate *priv;
     gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
     GtkWidget   *widget = graph;
     GtkAllocation allocation;
 
-    cairo_t *cr = NULL;
     cairo_status_t status;
   	
 	if (glg_flag_debug) {
@@ -787,7 +794,7 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, GdkEventExpose *event)
 
     /* 
      * get a cairo_t */
-	priv->cr = cr = gdk_cairo_create ( gtk_widget_get_window(widget) );
+	priv->cr = cr; //  = gdk_cairo_create ( gtk_widget_get_window(widget) );
 
 	status = cairo_status(cr);
 	if (status != CAIRO_STATUS_SUCCESS) {
@@ -815,13 +822,13 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, GdkEventExpose *event)
     								(gdouble)priv->window_color.green/65535, 
     								(gdouble)priv->window_color.blue/65535);
 	cairo_rectangle (cr, 0,0, priv->page_box.width, priv->page_box.height);
-	cairo_clip (cr);  
+	cairo_clip (cr);
  
 	/* 
 	 * Draw the actual Chart */
     glg_line_graph_draw (graph); 
   	
-	cairo_destroy (cr);
+//	cairo_destroy (cr);
 	priv->cr = NULL;
 
 	return FALSE;
@@ -961,24 +968,20 @@ extern gboolean glg_line_graph_chart_set_color (GlgLineGraph *graph, GLGElementI
 
     switch ( element ) {
         case GLG_SCALE:
-             g_snprintf (priv->ch_color_scale_fg, sizeof (priv->ch_color_scale_fg), 
-                         "%s", pch_color);        
-             gdk_color_parse (priv->ch_color_scale_fg, &priv->scale_color);
+             g_utf8_strncpy (priv->ch_color_scale_fg, pch_color, sizeof (priv->ch_color_scale_fg));
+             gdk_rgba_parse (&priv->scale_color, priv->ch_color_scale_fg);
              break;        
         case GLG_TITLE:
-             g_snprintf (priv->ch_color_title_fg, sizeof (priv->ch_color_title_fg), 
-                         "%s", pch_color);        
-             gdk_color_parse (priv->ch_color_title_fg, &priv->title_color);
+            g_utf8_strncpy (priv->ch_color_title_fg, pch_color, sizeof (priv->ch_color_title_fg));
+             gdk_rgba_parse (&priv->title_color, priv->ch_color_title_fg);
              break;        
         case GLG_WINDOW:
-             g_snprintf (priv->ch_color_window_bg, sizeof (priv->ch_color_window_bg),
-                         "%s", pch_color);
-             gdk_color_parse (priv->ch_color_window_bg, &priv->window_color);
+            g_utf8_strncpy (priv->ch_color_window_bg, pch_color, sizeof (priv->ch_color_window_bg));
+             gdk_rgba_parse (&priv->window_color, priv->ch_color_window_bg);
              break;
         case GLG_CHART:
-             g_snprintf (priv->ch_color_chart_bg, sizeof (priv->ch_color_chart_bg), 
-                         "%s", pch_color);        
-             gdk_color_parse (priv->ch_color_chart_bg, &priv->chart_color);
+            g_utf8_strncpy (priv->ch_color_chart_bg, pch_color, sizeof (priv->ch_color_chart_bg));
+             gdk_rgba_parse (&priv->chart_color, priv->ch_color_chart_bg);
              break;        
         default:
              g_message ("glg_line_graph_chart_set_color(): Invalid Element ID");
@@ -1122,7 +1125,7 @@ static void glg_line_graph_draw (GtkWidget *graph)
  * sets the width, height values of the input rectangle to the size of textbox
  * returns the width of the text area, or -1 on error
 */
-static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pch_text, GdkRectangle * rect)
+static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pch_text, cairo_rectangle_int_t * rect)
 {
     GlgLineGraphPrivate *priv;
     PangoLayout *layout = NULL;
@@ -1184,7 +1187,7 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
  * sets the width, height values of the input rectangle to the size of textbox
  * returns the height of the text area, or -1 on error
 */
-static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_text, GdkRectangle *rect)
+static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_text, cairo_rectangle_int_t *rect)
 {
     GlgLineGraphPrivate *priv;
     PangoLayout *layout = NULL;
@@ -1540,7 +1543,7 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
 	/*
 	 * get current mouse pointer, 
 	 * and as a side effect allow another notify message */    
-  	gdk_window_get_pointer (gtk_widget_get_window(GTK_WIDGET(graph)), &x, &y, &priv->mouse_state);
+  	gdk_window_get_device_position (gtk_widget_get_window(GTK_WIDGET(graph)), priv->device_pointer, &x, &y, &priv->mouse_state);
 
     /* 
      * see if mouse ptr is in plot_box x-range point */
@@ -1981,7 +1984,7 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
 /*    psd->i_max_points = MIN (priv->x_range.i_max_scale, priv->x_range.i_num_minor); */
     psd->i_max_points = priv->x_range.i_max_scale;
         
-    gdk_color_parse (pch_color_text, &psd->legend_color);
+    gdk_rgba_parse (&psd->legend_color, pch_color_text);
     g_snprintf (psd->ch_legend_color, sizeof (psd->ch_legend_color), "%s", pch_color_text);
     psd->cb_id = GLG_SERIES_ID;
 
@@ -2019,7 +2022,7 @@ static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventB
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 1))
     {
         priv->b_tooltip_active = priv->b_tooltip_active ? FALSE : TRUE;    	
-        gdk_window_get_pointer (ev->window, &x, &y, &priv->mouse_state);
+        gdk_window_get_device_position (ev->window, priv->device_pointer, &x, &y, &priv->mouse_state);
 	    priv->mouse_pos.x = x;
     	priv->mouse_pos.y = y;
         glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
@@ -2027,12 +2030,12 @@ static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventB
     }
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 2) && priv->b_mouse_onoff)
     {   	
-        glg_flag_debug = glg_flag_debug ? FALSE : TRUE; 
+        glg_flag_debug = glg_flag_debug ? FALSE : TRUE;
         return TRUE;        
     }
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 3))
     {
-        priv->b_mouse_onoff = priv->b_mouse_onoff ? FALSE : TRUE; 
+        priv->b_mouse_onoff = priv->b_mouse_onoff ? FALSE : TRUE;
         return TRUE;        
     }
 
@@ -2059,7 +2062,7 @@ static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEvent
 
     if (ev->is_hint)
     {
-        gdk_window_get_pointer (ev->window, &x, &y, &state);
+        gdk_window_get_device_position (ev->window, priv->device_pointer, &x, &y, &state);
     }
     else
     {
@@ -2080,7 +2083,7 @@ static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEvent
     return TRUE;
 }
 
-static void glg_line_graph_destroy (GtkObject *object)
+static void glg_line_graph_destroy (GtkWidget *object)
 {
   GlgLineGraphPrivate *priv = NULL;
   GtkWidget       *widget = NULL;
@@ -2110,9 +2113,9 @@ static void glg_line_graph_destroy (GtkObject *object)
       priv->y_label_text = NULL;
       priv->page_title_text = NULL;
 
-      if (GTK_OBJECT_CLASS (glg_line_graph_parent_class)->destroy != NULL)
+      if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy != NULL)
       {
-         (*GTK_OBJECT_CLASS (glg_line_graph_parent_class)->destroy) (object);
+         (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy) (object);
       }
   }
     if ( glg_flag_debug)

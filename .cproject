@@ -35,12 +35,11 @@
 								<option id="gnu.c.compiler.option.include.paths.919118962" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/gtk+/2.24.28_2/include/gtk-2.0"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/gtk+/2.24.28_2/lib/gtk-2.0/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/cairo/1.14.6_1/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/glib/2.46.2/include/glib-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/glib/2.46.2/lib/glib-2.0/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/pango/1.36.8_2/include/pango-1.0"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/gtk+3/3.16.6/include/gtk-3.0"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.734032900" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -62,4 +61,6 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

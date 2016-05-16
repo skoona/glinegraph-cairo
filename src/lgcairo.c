@@ -63,6 +63,10 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
 }
 
 
+/*
+ * to enable debug messages
+ * $ export G_MESSAGES_DEBUG=all
+ */
 int main (int argc, char **argv)
 {
 	GtkWidget *window;
@@ -160,7 +164,7 @@ int main (int argc, char **argv)
     glg_line_graph_data_series_add (glg, "Charge", "orange");
     glg_line_graph_data_series_add (glg, "Line", "yellow");
 
-	ui_add_values = g_timeout_add (2000, (GSourceFunc) fn_add_series_data_values, glg);
+	ui_add_values = g_timeout_add (5000, (GSourceFunc) fn_add_series_data_values, glg);
 
 	gtk_main ();
 	
