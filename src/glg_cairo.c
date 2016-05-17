@@ -374,7 +374,9 @@ static void 	glg_line_graph_get_property (GObject *object, guint prop_id, GValue
 static void 	glg_line_graph_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 
 static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfigure *event);
-static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr);
+static void     glg_line_graph_size_allocate(GtkWidget *widget, GdkRectangle *allocation);
+static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle *allocation);
+static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr);
 static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventButton * ev);
 static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEventMotion * ev);
 
@@ -435,9 +437,10 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 
 	/* GtkWidget signals overrides */
 	widget_class->configure_event 		= glg_line_graph_configure_event;
-	widget_class->draw      			    = glg_line_graph_expose;
+	widget_class->draw      			    = glg_line_graph_master_draw;
 	widget_class->motion_notify_event 	= glg_line_graph_motion_notify_event;    
   	widget_class->button_press_event  	= glg_line_graph_button_press_event;
+    widget_class->size_allocate    = glg_line_graph_size_allocate;
 
 	/**
 	 * GlgLineGraph::point-selected:
@@ -621,91 +624,86 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 	return;
 }
 
-
-static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfigure *event)
-{
-	GlgLineGraphPrivate *priv;
-    GlgLineGraph   *graph = GLG_LINE_GRAPH(widget);
-    gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
+static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle *allocation) {
+    GlgLineGraphPrivate *priv;
     PangoLayout *layout;
-  	
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_configure_event(entered)");
-	}
-	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
-	
-	g_return_val_if_fail ( event->type == GDK_CONFIGURE, FALSE);
-	
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
-	g_return_val_if_fail ( priv != NULL, FALSE);	
+    gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
 
-	/* 
-	 * test to ensure chart ranges are already set */
-	xfactor = MIN (priv->x_range.i_num_minor, priv->x_range.i_num_major);
-	yfactor = MIN (priv->y_range.i_num_minor, priv->y_range.i_num_major);
-	chart_set_ranges = MIN (xfactor, yfactor);    
-	g_return_val_if_fail (chart_set_ranges != 0, FALSE);
-	
-
-    if (glg_flag_debug) { 
-		g_debug ("===> glg_line_graph_configure_event(new width=%d, height=%d)", event->width, event->height);
-    } 
-
-	/*
-	 * Compute scale: use managed or our desired user space */
-	if ( (event->width < GLG_USER_MODEL_X) || 
-         (event->height < GLG_USER_MODEL_Y)) {
-		  priv->page_box.width = GLG_USER_MODEL_X;
-		  priv->page_box.height = GLG_USER_MODEL_Y;
-    } else {
-		  priv->page_box.width = event->width;
-		  priv->page_box.height = event->height;		
+    if (glg_flag_debug) {
+        g_debug ("===> glg_line_graph_compute_layout(entered)");
     }
+    g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-  	/* 
-  	 * Create a PangoLayout, get the spacing of one large char to use as a standard */
-  	layout = gtk_widget_create_pango_layout (widget, "M");
-		pango_layout_set_markup (layout, "<b>M</b>", -1);
-		pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
-        pango_layout_get_pixel_size (layout, &xfactor, &yfactor);
-        if (glg_flag_debug) {
-            g_debug ("cfg:factors:raw:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
-        }
-		priv->xfactor = xfactor = ((xfactor+6)/10) * 10;
-		priv->yfactor = yfactor = ((yfactor+8)/10) * 10;
-	    if (glg_flag_debug) {
-			g_debug ("cfg:factors:adj:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
-	    }
-  	g_object_unref (layout);
+    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    g_return_val_if_fail ( priv != NULL, FALSE);
 
     /*
-     * Setup chart rectangles */	
-	priv->x_border = xfactor / 2;		     /* def 16/2=8 edge pad */
-	priv->y_border = yfactor / 4;	         /* def 20/5=4 edge pad */
+     * test to ensure chart ranges are already set */
+    xfactor = MIN (priv->x_range.i_num_minor, priv->x_range.i_num_major);
+    yfactor = MIN (priv->y_range.i_num_minor, priv->y_range.i_num_major);
+    chart_set_ranges = MIN (xfactor, yfactor);
+    g_return_val_if_fail (chart_set_ranges != 0, FALSE);
+
+
+    if (glg_flag_debug) { 
+        g_debug ("===> glg_line_graph_compute_layout(new width=%d, height=%d)", allocation->width, allocation->height);
+    } 
+
+    /*
+     * Compute scale: use managed or our desired user space */
+    if ( (allocation->width < GLG_USER_MODEL_X) ||
+         (allocation->height < GLG_USER_MODEL_Y)) {
+          priv->page_box.width = GLG_USER_MODEL_X;
+          priv->page_box.height = GLG_USER_MODEL_Y;
+    } else {
+          priv->page_box.width = allocation->width;
+          priv->page_box.height = allocation->height;
+    }
+
+    /*
+     * Create a PangoLayout, get the spacing of one large char to use as a standard */
+    layout = gtk_widget_create_pango_layout (GTK_WIDGET(graph), "M");
+        pango_layout_set_markup (layout, "<b>M</b>", -1);
+        pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
+        pango_layout_get_pixel_size (layout, &xfactor, &yfactor);
+        if (glg_flag_debug) {
+            g_debug ("Alloc:factors:raw:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
+        }
+        priv->xfactor = xfactor = ((xfactor+6)/10) * 10;
+        priv->yfactor = yfactor = ((yfactor+8)/10) * 10;
+        if (glg_flag_debug) {
+            g_debug ("Alloc:factors:adj:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
+        }
+    g_object_unref (layout);
+
+    /*
+     * Setup chart rectangles */
+    priv->x_border = xfactor / 2;            /* def 16/2=8 edge pad */
+    priv->y_border = yfactor / 4;            /* def 20/5=4 edge pad */
     
     if (priv->lgflags & GLG_TITLE_T) {        
-    	    priv->page_title_box.x = xfactor * 6;       /* define top-left corner of textbox */
-    	    priv->page_title_box.y = priv->y_border;
-    	    priv->page_title_box.width  = priv->page_box.width - priv->page_title_box.x - priv->x_border;
-		priv->page_title_box.height = yfactor * 2;
+        priv->page_title_box.x = xfactor * 6;       /* define top-left corner of textbox */
+        priv->page_title_box.y = priv->y_border;
+        priv->page_title_box.width  = priv->page_box.width - priv->page_title_box.x - priv->x_border;
+        priv->page_title_box.height = yfactor * 2;
     }
     if (priv->lgflags & GLG_TITLE_X) {    
         priv->x_label_box.x = xfactor * 6;          /* define top-left corner of textbox */
         priv->x_label_box.y = priv->page_box.height - yfactor - priv->y_border - priv->x_border;
         priv->x_label_box.width  = priv->page_box.width - priv->x_label_box.x - priv->x_border;
-    	    priv->x_label_box.height = yfactor + priv->y_border;
+        priv->x_label_box.height = yfactor + priv->y_border;
     }
     if (priv->lgflags & GLG_TITLE_Y) {              /* define bottom left corner */
-    	priv->y_label_box.x = priv->x_border;
-    	priv->y_label_box.y = priv->page_box.height - (yfactor * 3);
-    	priv->y_label_box.width  = xfactor * 3;
-    	priv->y_label_box.height = priv->y_label_box.y - (yfactor * 3);
+        priv->y_label_box.x = priv->x_border;
+        priv->y_label_box.y = priv->page_box.height - (yfactor * 3);
+        priv->y_label_box.width  = xfactor * 3;
+        priv->y_label_box.height = priv->y_label_box.y - (yfactor * 3);
     }
     if (priv->lgflags & GLG_TOOLTIP) {        
-		priv->tooltip_box.x = priv->y_label_box.width + priv->y_label_box.x + (xfactor * 2) + priv->x_border;       /* define top-left corner of textbox */
-		priv->tooltip_box.y = priv->y_border;
-		priv->tooltip_box.width = priv->page_box.width - priv->tooltip_box.x - xfactor;
-		priv->tooltip_box.height = (yfactor * 2) + priv->y_border;
+        priv->tooltip_box.x = priv->y_label_box.width + priv->y_label_box.x + (xfactor * 2) + priv->x_border;       /* define top-left corner of textbox */
+        priv->tooltip_box.y = priv->y_border;
+        priv->tooltip_box.width = priv->page_box.width - priv->tooltip_box.x - xfactor;
+        priv->tooltip_box.height = (yfactor * 2) + priv->y_border;
     }
 
     /*
@@ -718,7 +716,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
     priv->plot_box.height = (gint) priv->page_box.height - priv->plot_box.y  - priv->x_label_box.height - yfactor;
    
     if (glg_flag_debug) {
-        g_debug ("cfg:Max.Avail: plot_box.width=%d, plot_box.height=%d", priv->plot_box.width, priv->plot_box.height);
+        g_debug ("Alloc:Max.Avail: plot_box.width=%d, plot_box.height=%d", priv->plot_box.width, priv->plot_box.height);
     }
 
     /* 
@@ -730,19 +728,19 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
     priv->plot_box.width  = ( (gint)(priv->plot_box.width  / priv->x_range.i_num_minor) * priv->x_range.i_num_minor);  
     priv->plot_box.height = ( (gint)(priv->plot_box.height / priv->y_range.i_num_minor) * priv->y_range.i_num_minor);
 
-	/*
-	 * Distribute the difference toward the bottom right
-	 */
+    /*
+     * Distribute the difference toward the bottom right
+     */
     xfactor -= priv->plot_box.width;
     yfactor -= priv->plot_box.height;
     priv->plot_box.x += (gint)(xfactor * 0.80);
     priv->plot_box.y += yfactor;    
     priv->tooltip_box.x = priv->page_title_box.x = priv->plot_box.x;
     priv->x_label_box.x = priv->plot_box.x;
-	priv->page_title_box.width = priv->plot_box.width;
-	priv->tooltip_box.width = priv->x_label_box.width = priv->plot_box.width;
-	priv->y_label_box.y = priv->plot_box.y + priv->plot_box.height;
-	
+    priv->page_title_box.width = priv->plot_box.width;
+    priv->tooltip_box.width = priv->x_label_box.width = priv->plot_box.width;
+    priv->y_label_box.y = priv->plot_box.y + priv->plot_box.height;
+
     /*  
      * Determine the pixel increment of the grid lines 
      */
@@ -752,7 +750,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
     priv->x_range.i_major_inc = priv->plot_box.width / priv->x_range.i_num_major;
 
     if (glg_flag_debug) {
-        g_debug ("cfg:Chart:Incs:    x_minor=%d, x_major=%d, y_minor=%d, y_major=%d, plot_box.x=%d, plot_box.y=%d, plot_box.width=%d, plot_box.height=%d",
+        g_debug ("Alloc:Chart:Incs:    x_minor=%d, x_major=%d, y_minor=%d, y_major=%d, plot_box.x=%d, plot_box.y=%d, plot_box.width=%d, plot_box.height=%d",
               priv->x_range.i_minor_inc,
               priv->x_range.i_major_inc,
               priv->y_range.i_minor_inc,
@@ -762,50 +760,100 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
               priv->plot_box.width,
               priv->plot_box.height);
 
-        g_debug ("cfg:Chart:Nums:    x_num_minor=%d, x_num_major=%d, y_num_minor=%d, y_num_major=%d",
+        g_debug ("Alloc:Chart:Nums:    x_num_minor=%d, x_num_major=%d, y_num_minor=%d, y_num_major=%d",
               priv->x_range.i_num_minor,
               priv->x_range.i_num_major,
               priv->y_range.i_num_minor,
               priv->y_range.i_num_major);
 
-        g_debug ("cfg:Chart:Plot:    x=%d, y=%d, width=%d, height=%d",
+        g_debug ("Alloc:Chart:Plot:    x=%d, y=%d, width=%d, height=%d",
                 priv->plot_box.x,
                 priv->plot_box.y,
                 priv->plot_box.width,
                 priv->plot_box.height);
 
-        g_debug ("cfg:Chart:Title:   x=%d, y=%d, width=%d, height=%d",
+        g_debug ("Alloc:Chart:Title:   x=%d, y=%d, width=%d, height=%d",
                 priv->page_title_box.x,
                 priv->page_title_box.y,
                 priv->page_title_box.width,
                 priv->page_title_box.height);
-        g_debug ("cfg:Chart:yLabel:  x=%d, y=%d, width=%d, height=%d",
+        g_debug ("Alloc:Chart:yLabel:  x=%d, y=%d, width=%d, height=%d",
                 priv->y_label_box.x,
                 priv->y_label_box.y,
                 priv->y_label_box.width,
                 priv->y_label_box.height);
-        g_debug ("cfg:Chart:xLabel:  x=%d, y=%d, width=%d, height=%d",
+        g_debug ("Alloc:Chart:xLabel:  x=%d, y=%d, width=%d, height=%d",
                 priv->x_label_box.x,
                 priv->x_label_box.y,
                 priv->x_label_box.width,
                 priv->x_label_box.height);
-        g_debug ("cfg:Chart:Tooltip: x=%d, y=%d, width=%d, height=%d",
+        g_debug ("Alloc:Chart:Tooltip: x=%d, y=%d, width=%d, height=%d",
                 priv->tooltip_box.x,
                 priv->tooltip_box.y,
                 priv->tooltip_box.width,
                 priv->tooltip_box.height);
 
-        g_debug ("===> glg_line_graph_configure_event(exited)");
+        g_debug ("===> glg_line_graph_compute_layout(exited)");
     }
     
-    
-    return TRUE;
+    return (TRUE);
 }
+
+static void     glg_line_graph_size_allocate(GtkWidget *widget, GdkRectangle *allocation) {
+    gboolean rc = FALSE;
+
+    if (glg_flag_debug) {
+        g_debug ("===> glg_line_graph_size_allocate(entered)");
+    }
+
+    if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->size_allocate != NULL)
+    {
+       (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->size_allocate) (widget, allocation);
+    }
+
+    rc = glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), allocation);
+
+    if (glg_flag_debug) {
+        g_debug ("===> glg_line_graph_size_allocate(exited) rc=%s", (rc ? "True" : "False"));
+    }
+}
+
+static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfigure *event)
+{
+    GdkRectangle allocation;
+    GlgLineGraph   *graph = GLG_LINE_GRAPH(widget);
+    gboolean rc = FALSE;
+
+	if (glg_flag_debug) {
+		g_debug ("===> glg_line_graph_configure_event(entered)");
+	}
+	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
+
+	g_return_val_if_fail ( event->type == GDK_CONFIGURE, FALSE);
+
+    if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event != NULL)
+    {
+       (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event) (widget, event);
+    }
+
+	allocation.x = event->y;
+    allocation.y = event->x;
+	allocation.width = event->width;
+	allocation.height = event->height;
+    rc = glg_line_graph_compute_layout(graph, &allocation);
+
+    if (glg_flag_debug) {
+        g_debug ("===> glg_line_graph_configure_event(exited) rc=%s", (rc ? "True" : "False"));
+    }
+    
+    return (rc);
+}
+
 /*
  * This routine is the master paint routine for the line graph
  * it sets up the deminsions of the space and call DRAW to get the graph done
 */
-static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
+static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 {
 	GlgLineGraphPrivate *priv;
     gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
@@ -815,7 +863,7 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
     cairo_status_t status;
   	
 	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_expose(entered)");
+		g_debug ("===> glg_line_graph_master_draw(entered)");
 	}
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 	
@@ -825,7 +873,7 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
 	gtk_widget_get_allocation(widget, &allocation);
 
     if (glg_flag_debug) {
-		g_debug ("glg_line_graph_expose(width=%d, height=%d)", allocation.width, allocation.height);
+		g_debug ("glg_line_graph_master_draw(width=%d, height=%d)", allocation.width, allocation.height);
     }
     
 	/* 
@@ -866,7 +914,7 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
     priv->cr = NULL;
 
     if (glg_flag_debug) {
-        g_debug ("glg_line_graph_expose(exited)");
+        g_debug ("glg_line_graph_master_draw(exited)");
     }
 
 	return TRUE;
@@ -1329,6 +1377,7 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
     /*
      * Get pixel size in user space coordinates */
 	cairo_save(priv->cr);
+
   	layout = pango_cairo_create_layout (priv->cr);
 	pango_layout_set_markup (layout, pch_text, -1);
     pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
@@ -1823,7 +1872,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		return 1;
 	}
 
-	cairo_save (priv->cr);
+
     	cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red,
     									 (gdouble)psd->legend_color.green,
     									 (gdouble)psd->legend_color.blue);
@@ -1849,8 +1898,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		cairo_move_to (priv->cr, point_pos[0].x, point_pos[0].y);
 		cairo_arc (priv->cr, point_pos[0].x, point_pos[0].y, 3., 0., 360 * M_PI);
 		
-    	cairo_fill (priv->cr);    	
-    	cairo_restore (priv->cr);
+		cairo_fill (priv->cr);
         return 1;
     }
 
@@ -1876,10 +1924,8 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		 cairo_move_to (priv->cr, point_pos[v_index].x , point_pos[v_index].y );
 		 cairo_arc (priv->cr, point_pos[v_index].x , point_pos[v_index].y , 3.0, 0., 360 * M_PI);
     }
-	cairo_fill (priv->cr);
+    cairo_fill (priv->cr);
 	
-    cairo_restore (priv->cr);
-
     return v_index;
 }
 
@@ -1904,6 +1950,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
     
 
     data_sets = g_list_first (priv->lg_series);
+    cairo_save (priv->cr);
     while (data_sets)
     {
         psd = data_sets->data;
@@ -1914,6 +1961,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         }
         data_sets = g_list_next (data_sets);
     }
+    cairo_restore (priv->cr);
 
     if (glg_flag_debug)
     {
@@ -2005,7 +2053,7 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
                 g_list_remove_all (priv->lg_series_time, gl_remove->data);
         }
         priv->lg_series_time =
-            g_list_append (priv->lg_series_time, GINT_TO_POINTER ((time_t) time (NULL)));
+            g_list_append (priv->lg_series_time, GINT_TO_POINTER ((time_t) time (NULL)));  /* TODO: Leaking Memory */
             
     }
 
