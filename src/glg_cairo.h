@@ -3,10 +3,10 @@
  *
  * A GTK+ widget that implements a XY line graph
  *
- * (c) 2007, James Scott Jr 
+ * (c) 2007, 2016 James Scott Jr 
  *
  * Authors:
- *   James Scott Jr <skoona@users.sourceforge.net>
+ *   James Scott Jr <skoona@gmail.com>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

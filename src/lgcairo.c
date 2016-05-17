@@ -51,11 +51,11 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
     g_return_val_if_fail (GTK_IS_WIDGET(graph), TRUE);
 
 
-    glg_line_graph_data_series_add_value (graph, 0, 7.7 );
-    glg_line_graph_data_series_add_value (graph, 1, 19.5 );
+    glg_line_graph_data_series_add_value (graph, 0, g_random_double_range (5.0, 20.0) );
+    glg_line_graph_data_series_add_value (graph, 1, g_random_double_range (20.0, 30.0) );
     glg_line_graph_data_series_add_value (graph, 2, 82.7 );
     glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (0.0, 100.0) );
-    glg_line_graph_data_series_add_value (graph, 4, 100.0 );
+    glg_line_graph_data_series_add_value (graph, 4, g_random_double_range (98.0, 100.0) );
 
     glg_line_graph_redraw ( graph );
 
@@ -77,6 +77,7 @@ int main (int argc, char **argv)
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW(window), "GlgLineGraph Widget Example"); 
+	gtk_window_set_default_size (GTK_WINDOW(window), 540, 260);	
 	g_signal_connect (window, "destroy",
 					  G_CALLBACK (gtk_main_quit), NULL);
 	
@@ -84,6 +85,7 @@ int main (int argc, char **argv)
 	 * Create a new line graph
 	 */
 	glg = glg_line_graph_new();
+		gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));    
 
  /* 
   * set which elements of chart are visible */     
@@ -147,11 +149,6 @@ int main (int argc, char **argv)
 	 */
     g_signal_connect (glg, "point-selected", G_CALLBACK(fn_show_point_selected),NULL);
 
-	gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
-    
-	gtk_window_set_default_size (GTK_WINDOW(window), 540, 260);	
-	gtk_widget_show_all (window);
-
  /* 
   * Add empty data series containers, then add data later via timer routine 
   * this routine returns an int which is the series-number for plotting data
@@ -165,6 +162,8 @@ int main (int argc, char **argv)
     glg_line_graph_data_series_add (glg, "Line", "yellow");
 
 	ui_add_values = g_timeout_add (10000, (GSourceFunc) fn_add_series_data_values, glg);
+
+	gtk_widget_show_all (window);
 
 	gtk_main ();
 	

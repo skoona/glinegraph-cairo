@@ -626,8 +626,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 {
 	GlgLineGraphPrivate *priv;
     GlgLineGraph   *graph = GLG_LINE_GRAPH(widget);
-    gint    xfactor = 0,
-    			yfactor = 0; 
+    gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
     PangoLayout *layout;
   	
 	if (glg_flag_debug) {
@@ -639,6 +638,14 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 	
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	g_return_val_if_fail ( priv != NULL, FALSE);	
+
+	/* 
+	 * test to ensure chart ranges are already set */
+	xfactor = MIN (priv->x_range.i_num_minor, priv->x_range.i_num_major);
+	yfactor = MIN (priv->y_range.i_num_minor, priv->y_range.i_num_major);
+	chart_set_ranges = MIN (xfactor, yfactor);    
+	g_return_val_if_fail (chart_set_ranges != 0, FALSE);
+	
 
     if (glg_flag_debug) { 
 		g_debug ("===> glg_line_graph_configure_event(new width=%d, height=%d)", event->width, event->height);
@@ -736,7 +743,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 	priv->tooltip_box.width = priv->x_label_box.width = priv->plot_box.width;
 	priv->y_label_box.y = priv->plot_box.y + priv->plot_box.height;
 	
-    /*
+    /*  
      * Determine the pixel increment of the grid lines 
      */
     priv->y_range.i_minor_inc = priv->plot_box.height / priv->y_range.i_num_minor;
@@ -823,8 +830,8 @@ static gboolean glg_line_graph_expose (GtkWidget *graph, cairo_t *cr)
     
 	/* 
 	 * test to ensure chart ranges are already set */
-	xfactor = MAX (priv->x_range.i_num_minor, priv->x_range.i_num_major);
-	yfactor = MAX (priv->y_range.i_num_minor, priv->y_range.i_num_major);
+	xfactor = MIN (priv->x_range.i_num_minor, priv->x_range.i_num_major);
+	yfactor = MIN (priv->y_range.i_num_minor, priv->y_range.i_num_major);
 	chart_set_ranges = MIN (xfactor, yfactor);    
 	g_return_val_if_fail (chart_set_ranges != 0, FALSE);
 
