@@ -124,8 +124,8 @@ typedef enum _GLG_Graph_Elements {
 /* 
  * Public Interfaces 
 */
-extern GType        glg_line_graph_get_type  (void) G_GNUC_CONST; 
-extern GtkWidget *  glg_line_graph_new (void);
+extern GlgLineGraph *  glg_line_graph_new (void);
+extern GType    glg_line_graph_get_type  (void) G_GNUC_CONST;
 extern void 		glg_line_graph_redraw (GlgLineGraph *graph);
 extern GLGElementID glg_line_graph_chart_get_elements ( GlgLineGraph *graph);
 extern void 		glg_line_graph_chart_set_elements ( GlgLineGraph *graph, GLGElementID element);
@@ -136,6 +136,13 @@ extern void 		glg_line_graph_chart_set_ranges (GlgLineGraph *graph,
                                  gint x_scale_min,  gint x_scale_max,
                                  gint y_tick_minor, gint y_tick_major, 
                                  gint y_scale_min,  gint y_scale_max);
+extern void glg_line_graph_chart_set_x_ranges (GlgLineGraph *graph,
+                                 gint x_tick_minor, gint x_tick_major,
+                                 gint x_scale_min,  gint x_scale_max);
+extern void glg_line_graph_chart_set_y_ranges (GlgLineGraph *graph,
+                                 gint y_tick_minor, gint y_tick_major,
+                                 gint y_scale_min,  gint y_scale_max);
+
 
 extern gint 		glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pch_legend_text, const gchar *pch_color_text);
 extern gboolean 	glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint i_series_number, gdouble y_value);

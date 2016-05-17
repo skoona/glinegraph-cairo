@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 	/*
 	 * Create a new line graph
 	 */
-	glg = g_object_new (GLG_TYPE_LINE_GRAPH, NULL);
+	glg = glg_line_graph_new();
 
  /* 
   * set which elements of chart are visible */     
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
  /* 
   * set chart foreground and background colors */
     g_object_set (glg,  "graph-title-foreground",  "blue",
-    					"graph-scale-foreground",  "black",
+    					    "graph-scale-foreground",  "black",
      					"graph-chart-background",  "light blue",
      					"graph-window-background", "white", 
      					NULL);
@@ -134,12 +134,12 @@ int main (int argc, char **argv)
           		NULL); 	
 
     g_object_set (glg, "text-title-yaxis",
-	  "<small>Pango Text Markup is supported\n"
-	  "in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
+	  "Pango Text Markup is Supported!\n"
+	  "<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
           					NULL); 	
           					 
     g_object_set (glg, "text-title-xaxis",
-      "<small><i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i></small>", 
+      "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
         					NULL);
 
 	/*
@@ -164,13 +164,13 @@ int main (int argc, char **argv)
     glg_line_graph_data_series_add (glg, "Charge", "orange");
     glg_line_graph_data_series_add (glg, "Line", "yellow");
 
-	ui_add_values = g_timeout_add (5000, (GSourceFunc) fn_add_series_data_values, glg);
+	ui_add_values = g_timeout_add (10000, (GSourceFunc) fn_add_series_data_values, glg);
 
 	gtk_main ();
 	
 	gb_stop = TRUE;
 	
-	g_source_remove (ui_add_values ); 
+	g_source_remove (ui_add_values );
 	 
 	return 0;
 }
