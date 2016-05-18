@@ -1244,7 +1244,7 @@ static void glg_line_graph_draw (GtkWidget *graph)
 	cairo_rectangle (priv->cr, priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
 	cairo_fill_preserve (priv->cr);
     cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */ 
-	cairo_stroke (priv->cr);
+	cairo_stroke_preserve (priv->cr);
 
     if (glg_flag_debug) {
         g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
@@ -1376,7 +1376,7 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 
     /*
      * Get pixel size in user space coordinates */
-	cairo_save(priv->cr);
+//	cairo_save(priv->cr);
 
   	layout = pango_cairo_create_layout (priv->cr);
 	pango_layout_set_markup (layout, pch_text, -1);
@@ -1404,7 +1404,7 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 
 	pango_cairo_update_layout (priv->cr, layout);
 	pango_cairo_show_layout (priv->cr, layout);
-	cairo_restore(priv->cr);
+//	cairo_restore(priv->cr);
 
   	g_object_unref (layout);
 
@@ -1463,7 +1463,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     		cairo_rel_line_to (priv->cr, x_pos - 2, 0 );
     	}
   		cairo_set_line_width (priv->cr, 1.0);
-    	cairo_stroke (priv->cr);    	  	
+    	cairo_stroke_preserve (priv->cr);
     }
 
 
@@ -1476,7 +1476,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     		cairo_rel_line_to (priv->cr, x_pos - 2, 0 );
     	}
     	cairo_set_line_width (priv->cr, 2.0);
-    	cairo_stroke (priv->cr);
+    	cairo_stroke_preserve (priv->cr);
         cairo_set_line_width (priv->cr, 1.0);
     }
 
@@ -1501,7 +1501,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     		cairo_line_to (priv->cr, priv->plot_box.x + (x_minor_inc * (x_index + 1)), priv->plot_box.y + y_pos -1 );
     	}
   		cairo_set_line_width (priv->cr, 1.0);
-    	cairo_stroke (priv->cr);    	  	
+    	cairo_stroke_preserve (priv->cr);
     }
 
     x_pos = priv->plot_box.x;
@@ -1513,7 +1513,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     		cairo_line_to (priv->cr, priv->plot_box.x + (x_major_inc * (x_index + 1)), priv->plot_box.y  + y_pos );
 	    }
 		cairo_set_line_width (priv->cr, 2.0);
-    	cairo_stroke (priv->cr);    	  	
+    	cairo_stroke_preserve (priv->cr);
 		cairo_set_line_width (priv->cr, 1.0);        
     }
     
@@ -1834,7 +1834,7 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
     cairo_set_source_rgb (priv->cr, (gdouble)priv->scale_color.red,
     								 (gdouble)priv->scale_color.green,
     								 (gdouble)priv->scale_color.blue);
-    cairo_stroke (priv->cr);
+    cairo_stroke_preserve (priv->cr);
 
     cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
     								 (gdouble)priv->scale_color.green,
@@ -1873,11 +1873,11 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 	}
 
 
-    	cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red,
-    									 (gdouble)psd->legend_color.green,
-    									 (gdouble)psd->legend_color.blue);
-		cairo_set_line_width (priv->cr, (gdouble)priv->series_line_width);
-		cairo_set_line_cap (priv->cr, CAIRO_LINE_CAP_ROUND);
+    cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red,
+                                     (gdouble)psd->legend_color.green,
+                                     (gdouble)psd->legend_color.blue);
+    cairo_set_line_width (priv->cr, (gdouble)priv->series_line_width);
+    cairo_set_line_cap (priv->cr, CAIRO_LINE_CAP_ROUND);
 
     point_pos = psd->point_pos;
 
@@ -1898,7 +1898,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		cairo_move_to (priv->cr, point_pos[0].x, point_pos[0].y);
 		cairo_arc (priv->cr, point_pos[0].x, point_pos[0].y, 3., 0., 360 * M_PI);
 		
-		cairo_fill (priv->cr);
+		cairo_fill_preserve(priv->cr);
         return 1;
     }
 
@@ -1916,7 +1916,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 			cairo_line_to (priv->cr, point_pos[v_index].x, point_pos[v_index].y);
 		}
     }
-    cairo_stroke (priv->cr);
+    cairo_stroke_preserve (priv->cr);
 
 	cairo_set_line_width (priv->cr, 2.0);
     for (v_index = 0; v_index < psd->i_point_count ; v_index++)
@@ -1924,7 +1924,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		 cairo_move_to (priv->cr, point_pos[v_index].x , point_pos[v_index].y );
 		 cairo_arc (priv->cr, point_pos[v_index].x , point_pos[v_index].y , 3.0, 0., 360 * M_PI);
     }
-    cairo_fill (priv->cr);
+    cairo_fill_preserve(priv->cr);
 	
     return v_index;
 }
@@ -1950,7 +1950,6 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
     
 
     data_sets = g_list_first (priv->lg_series);
-    cairo_save (priv->cr);
     while (data_sets)
     {
         psd = data_sets->data;
@@ -1961,7 +1960,6 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         }
         data_sets = g_list_next (data_sets);
     }
-    cairo_restore (priv->cr);
 
     if (glg_flag_debug)
     {
