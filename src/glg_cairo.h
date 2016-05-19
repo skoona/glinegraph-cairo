@@ -125,7 +125,7 @@ typedef enum _GLG_Graph_Elements {
  * Public Interfaces 
 */
 extern GlgLineGraph *  glg_line_graph_new (void);
-extern GType    glg_line_graph_get_type  (void) G_GNUC_CONST;
+extern GType        glg_line_graph_get_type  (void) G_GNUC_CONST;
 extern void 		glg_line_graph_redraw (GlgLineGraph *graph);
 extern GLGElementID glg_line_graph_chart_get_elements ( GlgLineGraph *graph);
 extern void 		glg_line_graph_chart_set_elements ( GlgLineGraph *graph, GLGElementID element);

@@ -47,7 +47,7 @@ CFILE_GLOB=$(top_srcdir)/src/*.c
 
 # Header files to ignore when scanning.
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
-IGNORE_HFILES=glib-object.h
+IGNORE_HFILES=
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
@@ -67,12 +67,12 @@ expand_content_files=
 # signals and properties.
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
-AM_CPPFLAGS=-I$(top_srcdir) @GTK_CFLAGS@
-GTKDOC_LIBS=$(top_srcdir)/src/lgcairo-glg_cairo.o @GTK_LIBS@
+GTKDOC_CFLAGS=-I$(top_srcdir) $(GTK_CFLAGS) $(CFLAGS) 
+GTKDOC_LIBS=$(top_srcdir)/src/lgcairo-glg_cairo.o $(GTK_LIBS) $(LDFLAGS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include  $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST +=
+# EXTRA_DIST =

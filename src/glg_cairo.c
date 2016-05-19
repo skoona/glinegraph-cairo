@@ -278,6 +278,7 @@ typedef struct _GlgLineGraphPrivate
     gint        cb_id;			  /* structure id */	
     GLGElementID lgflags;         /* things to be drawn */
     /* new cairo design */
+    cairo_surface_t *surface;
     cairo_t 	 *cr;    
     cairo_rectangle_int_t page_title_box;
     cairo_rectangle_int_t tooltip_box;
@@ -368,7 +369,9 @@ G_DEFINE_TYPE_WITH_PRIVATE (GlgLineGraph, glg_line_graph, GTK_TYPE_DRAWING_AREA)
 /*
  * Private routines for graph widget internal functions
 */
-//static void 	glg_line_graph_class_init (GlgLineGraphClass *klass);
+gint64 glg_duration_us(gint64 *start_time, gchar *method_name); /* utils */
+
+static void 	glg_line_graph_class_init (GlgLineGraphClass *klass);
 static void 	glg_line_graph_init (GlgLineGraph *graph);
 static void 	glg_line_graph_destroy (GtkWidget *object);
 static void 	glg_line_graph_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
@@ -381,7 +384,7 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr);
 static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventButton * ev);
 static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEventMotion * ev);
 
-static void 	glg_line_graph_draw (GtkWidget *graph);
+static void 	glg_line_graph_draw_graph (GtkWidget *graph);
 static gint 	glg_line_graph_draw_tooltip (GlgLineGraph *graph);
 static void 	glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph);
 static void 	glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph);
@@ -434,14 +437,13 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
     obj_class->set_property = glg_line_graph_set_property;
     obj_class->get_property = glg_line_graph_get_property;
 
-    widget_class->destroy    = glg_line_graph_destroy;
-
 	/* GtkWidget signals overrides */
-//	widget_class->configure_event 		= glg_line_graph_configure_event;
-	widget_class->draw      			    = glg_line_graph_master_draw;
+	widget_class->configure_event 		= glg_line_graph_configure_event;
+	widget_class->draw      			= glg_line_graph_master_draw;
 	widget_class->motion_notify_event 	= glg_line_graph_motion_notify_event;    
   	widget_class->button_press_event  	= glg_line_graph_button_press_event;
-    widget_class->size_allocate    = glg_line_graph_size_allocate;
+    widget_class->size_allocate         = glg_line_graph_size_allocate;
+    widget_class->destroy               = glg_line_graph_destroy;
 
 	/**
 	 * GlgLineGraph::point-selected:
@@ -466,8 +468,6 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 			G_TYPE_DOUBLE,
 			G_TYPE_DOUBLE,
 			G_TYPE_DOUBLE);
-
-  g_type_class_add_private (obj_class, sizeof (GlgLineGraphPrivate));
 
 
   g_object_class_install_property (obj_class,
@@ -625,6 +625,30 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 	return;
 }
 
+/**
+ * Duration
+ * @param start_time  pointer to gint64 holding time since epoch in us, 0.000001
+ * @param method_name gchar to name of method to log
+ * @returns time since epoch in microseconds
+ *
+ * Note: start_time = NULL, return current time immediately
+ *       method_name = NULL, skips logging of duration log message
+ */
+gint64 glg_duration_us(gint64 *start_time, gchar *method_name) {
+	if (NULL == start_time) {
+		return (g_get_real_time());
+	}
+
+	gint64 duration = (g_get_real_time() - *start_time);
+
+	if (NULL != method_name) {
+		g_debug("DURATION: %s() duration=%4.3lf ms.", method_name, (double)duration/1000);
+	}
+    *start_time = g_get_real_time();
+
+	return (duration);
+}
+
 static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle *allocation) {
     GlgLineGraphPrivate *priv;
     PangoLayout *layout;
@@ -651,7 +675,9 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     } 
 
     /*
-     * Compute scale: use managed or our desired user space */
+     * Compute scale: use managed or our desired user space values
+     * - MUST MATCH VALUES IN <configure-event>, #compute_layout, and <draw> callbacks.
+    */
     if ( (allocation->width < GLG_USER_MODEL_X) ||
          (allocation->height < GLG_USER_MODEL_Y)) {
           priv->page_box.width = GLG_USER_MODEL_X;
@@ -808,12 +834,14 @@ static void     glg_line_graph_size_allocate(GtkWidget *widget, GdkRectangle *al
         g_debug ("===> glg_line_graph_size_allocate(entered)");
     }
 
+    rc = glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), allocation);
+
+    /* the following causes the <configure-event>
+     * so be sure to call #compute_layout before this */
     if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->size_allocate != NULL)
     {
        (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->size_allocate) (widget, allocation);
     }
-
-    rc = glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), allocation);
 
     if (glg_flag_debug) {
         g_debug ("===> glg_line_graph_size_allocate(exited) rc=%s", (rc ? "True" : "False"));
@@ -822,9 +850,13 @@ static void     glg_line_graph_size_allocate(GtkWidget *widget, GdkRectangle *al
 
 static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfigure *event)
 {
-    GdkRectangle allocation;
+	GlgLineGraphPrivate *priv;
     GlgLineGraph   *graph = GLG_LINE_GRAPH(widget);
     gboolean rc = FALSE;
+	cairo_t *cr;
+    cairo_status_t status;
+    gint width = 0, height = 0;
+
 
 	if (glg_flag_debug) {
 		g_debug ("===> glg_line_graph_configure_event(entered)");
@@ -833,19 +865,56 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 
 	g_return_val_if_fail ( event->type == GDK_CONFIGURE, FALSE);
 
+	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	g_return_val_if_fail ( priv != NULL, FALSE);
+
+    /*
+     * Create an Image Source for off-line drawing */
+    if (priv->surface) {
+        cairo_surface_destroy (priv->surface);
+    }
+
+    width = gtk_widget_get_allocated_width (widget);
+    height = gtk_widget_get_allocated_height (widget);
+
+    /*
+     * Compute scale: use managed or our desired user space values
+     * - MUST MATCH VALUES IN <configure-event>, #compute_layout, and <draw> callbacks.
+    */
+	if ((width < GLG_USER_MODEL_X) ||
+       (height < GLG_USER_MODEL_Y)) {
+			width = GLG_USER_MODEL_X;
+			height = GLG_USER_MODEL_Y;
+	}
+
+//#define             CAIRO_HAS_QUARTZ_SURFACE
+//    priv->surface = cairo_quartz_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: OSX Specific -- did not work */
+
+	priv->surface = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: This worked very well: also CAIRO_FORMAT_RGB24 */
+
+//    priv->surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget), /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
+//                                                   CAIRO_CONTENT_COLOR,
+//    											   width, height);
+	status = cairo_surface_status(priv->surface);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		g_message ("GLG-Configure-Event:#cairo_image_surface_create:status %d=%s", status, cairo_status_to_string(status) );
+	} else {
+		cr = cairo_create (priv->surface);
+			cairo_set_source_rgba (cr, priv->window_color.red, priv->window_color.green, priv->window_color.blue, 0.8);
+			cairo_paint (cr);
+		cairo_destroy (cr);
+
+	    glg_line_graph_draw_graph (GTK_WIDGET(widget));
+	}
+
+
     if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event != NULL)
     {
        (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event) (widget, event);
     }
 
-	allocation.x = event->y;
-    allocation.y = event->x;
-	allocation.width = event->width;
-	allocation.height = event->height;
-    rc = glg_line_graph_compute_layout(graph, &allocation);
-
     if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_configure_event(exited) rc=%s", (rc ? "True" : "False"));
+        g_debug ("===> glg_line_graph_configure_event(exited)");
     }
     
     return (rc);
@@ -862,11 +931,9 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     GtkWidget   *widget = GTK_WIDGET(graph);
     GtkAllocation allocation;
     GdkRectangle dirtyRect;
-    gint64 duration = 0;
-    gint64 start_time = g_get_real_time();
+    gint64 start_time = glg_duration_us(NULL, NULL);
 
-    cairo_status_t status;
-  	
+
 	if (glg_flag_debug) {
 		g_debug ("===> glg_line_graph_master_draw(entered)");
 	}
@@ -874,12 +941,6 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	g_return_val_if_fail ( priv != NULL, FALSE);	
-
-
-	status = cairo_status(cr);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		g_message ("GLG-Expose:cairo_create:status %d=%s", status, cairo_status_to_string(status) );
-	}
 
 	gtk_widget_get_allocation(widget, &allocation);
 	gdk_cairo_get_clip_rectangle (cr, &dirtyRect);
@@ -889,7 +950,7 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     	                 allocation.width, allocation.height,
     	                 dirtyRect.x, dirtyRect.y, dirtyRect.width, dirtyRect.height);
     }
-    
+
 	/* 
 	 * test to ensure chart ranges are already set */
 	xfactor = MIN (priv->x_range.i_num_minor, priv->x_range.i_num_major);
@@ -897,42 +958,30 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	chart_set_ranges = MIN (xfactor, yfactor);    
 	g_return_val_if_fail (chart_set_ranges != 0, FALSE);
 
-
-	/*
-	 * Clear existing Surface */
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_paint (cr);
-
-    /* 
-     * set a cairo_t */
-	priv->cr = cr;
-
-	/*
-	 * Set the scale to manage our desired user space */
+    /*
+     * Compute scale: use managed or our desired user space values
+     * - MUST MATCH VALUES IN <configure-event>, #compute_layout, and <draw> callbacks.
+    */
 	if ((allocation.width < GLG_USER_MODEL_X) ||
        (allocation.height < GLG_USER_MODEL_Y)) {
        	
-	    cairo_scale (priv->cr, (gdouble)allocation.width/GLG_USER_MODEL_X,
+	    cairo_scale (cr, (gdouble)allocation.width/GLG_USER_MODEL_X,
 		  		 		 (gdouble)allocation.height/GLG_USER_MODEL_Y);
 		  		 		 
 		if (glg_flag_debug) {
-			g_debug ("cairo_scale( x=%3.3f, y=%3.3f)", 
+			g_debug ("glg_line_graph_master_draw#cairo_scale( x=%3.3f, y=%3.3f)",
 								 (gdouble)allocation.width/GLG_USER_MODEL_X,
 							     (gdouble)allocation.height/GLG_USER_MODEL_Y);
 		}
     }
 
-
-	/* 
-	 * Draw the actual Chart */
-    glg_line_graph_draw (graph); 
-
-    priv->cr = NULL;
+	/*
+	 * set source after determining if scaling is required */
+    cairo_set_source_surface (cr, priv->surface, 0, 0);
+    cairo_paint (cr);
 
     if (glg_flag_debug) {
-    	duration = (g_get_real_time() - start_time);
-    	g_debug("TIME: glg_line_graph_master_draw() duration=%4.3lf ms.", (double)duration/1000);
-//    	start_time = g_get_real_time();
+    	glg_duration_us(&start_time, "glg_line_graph_master_draw#TOTAL-TIME");
         g_debug ("glg_line_graph_master_draw(exited)");
     }
 
@@ -948,9 +997,10 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 extern void glg_line_graph_redraw (GlgLineGraph *graph)
 {
 	GdkWindow *window = NULL;
+	GtkAllocation allocation;
 	
 	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_redraw()");
+		g_debug ("===> glg_line_graph_redraw(entered)");
 	}
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 		
@@ -958,7 +1008,14 @@ extern void glg_line_graph_redraw (GlgLineGraph *graph)
     g_return_if_fail ( GDK_IS_WINDOW(window) );
 
     /* redraw the window completely by exposing it */
-    gdk_window_invalidate_rect (window, NULL, FALSE);
+    glg_line_graph_draw_graph (GTK_WIDGET(graph));
+//    	gdk_window_invalidate_rect (window, NULL, FALSE);
+    	gtk_widget_get_allocation(GTK_WIDGET (graph), &allocation);
+    	gtk_widget_queue_draw_area (GTK_WIDGET (graph), allocation.x, allocation.y, allocation.width, allocation.height);
+
+	if (glg_flag_debug) {
+		g_debug ("===> glg_line_graph_redraw(exited)");
+	}
 }
 
 /**
@@ -1240,18 +1297,24 @@ extern gboolean glg_line_graph_chart_set_text (GlgLineGraph *graph, GLGElementID
   return rc;
 }
 
-static void glg_line_graph_draw (GtkWidget *graph)
+static void glg_line_graph_draw_graph (GtkWidget *graph)
 {
 	GlgLineGraphPrivate *priv;
 	GLGElementID element = 0;
+    gint64 start_time = glg_duration_us(NULL, NULL);
+    gint64 duration = glg_duration_us(NULL, NULL);
 
 	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_draw(entered)");
+		g_debug ("===> glg_line_graph_draw_graph(entered)");
 	}
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+
+    /* Paint to the surface, where we store our state */
+	  priv->cr = cairo_create (priv->surface);
+	  	cairo_set_source_rgba (priv->cr, 1, 1, 1, 0.9);
+	  	cairo_paint (priv->cr);
 	
     /* 
      * draw plot area */
@@ -1262,49 +1325,61 @@ static void glg_line_graph_draw (GtkWidget *graph)
 	cairo_fill_preserve (priv->cr);
     cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */
     cairo_stroke (priv->cr);
+    glg_duration_us(&start_time, "glg_line_graph_draw_graph#PlotArea");
 
+		if (glg_flag_debug) {
+			g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
+			  priv->page_box.width, priv->page_box.height,priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
+		}
+
+		/*
+		 * draw titles
+		 */
+		element = priv->lgflags;
+		if ( element & GLG_TITLE_T) {
+			glg_line_graph_draw_text_horizontal (GLG_LINE_GRAPH(graph), priv->page_title_text, &priv->page_title_box);
+			glg_duration_us(&start_time, "glg_line_graph_draw_graph#Top-Title");
+		}
+		if ( element & GLG_TITLE_X) {
+			glg_line_graph_draw_text_horizontal (GLG_LINE_GRAPH(graph), priv->x_label_text, &priv->x_label_box);
+			glg_duration_us(&start_time, "glg_line_graph_draw_graph#X-Title");
+		}
+		if ( element & GLG_TITLE_Y) {
+			glg_line_graph_draw_text_vertical (GLG_LINE_GRAPH(graph), priv->y_label_text, &priv->y_label_box);
+			glg_duration_us(&start_time, "glg_line_graph_draw_graph#Y-Title");
+		}
+
+		if ( ( element & GLG_GRID_LINES ) |
+			 ( element & GLG_GRID_MINOR_X ) |
+			 ( element & GLG_GRID_MAJOR_X ) |
+			 ( element & GLG_GRID_MINOR_Y ) |
+			 ( element & GLG_GRID_MAJOR_Y) ) {
+			 glg_line_graph_draw_grid_lines (GLG_LINE_GRAPH(graph));
+			 glg_duration_us(&start_time, "glg_line_graph_draw_graph#GridLines");
+		}
+		if ( element & GLG_GRID_LABELS_X) {
+			 glg_line_graph_draw_x_grid_labels (GLG_LINE_GRAPH(graph));
+			 glg_duration_us(&start_time, "glg_line_graph_draw_graph#X-Labels");
+		}
+		if ( element & GLG_GRID_LABELS_Y) {
+			 glg_line_graph_draw_y_grid_labels (GLG_LINE_GRAPH(graph));
+			 glg_duration_us(&start_time, "glg_line_graph_draw_graph#Y-Labels");
+		}
+
+		glg_line_graph_data_series_draw_all (GLG_LINE_GRAPH(graph), FALSE);
+		glg_duration_us(&start_time, "glg_line_graph_draw_graph#Series-All");
+
+		if ( element & GLG_TOOLTIP) {
+			 glg_line_graph_draw_tooltip (GLG_LINE_GRAPH(graph));
+			 glg_duration_us(&start_time, "glg_line_graph_draw_graph#Tooltip");
+		}
+
+    cairo_destroy (priv->cr);
+    priv->cr = NULL;
 
     if (glg_flag_debug) {
-        g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
-          priv->page_box.width, priv->page_box.height,priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
-    }
-
-    /*
-     * draw titles 
-     */
-    element = priv->lgflags;
-    if ( element & GLG_TITLE_T) {
-	    glg_line_graph_draw_text_horizontal (GLG_LINE_GRAPH(graph), priv->page_title_text, &priv->page_title_box);
-    }
-    if ( element & GLG_TITLE_X) {    
-	    glg_line_graph_draw_text_horizontal (GLG_LINE_GRAPH(graph), priv->x_label_text, &priv->x_label_box);
-    }
-    if ( element & GLG_TITLE_Y) {
-		glg_line_graph_draw_text_vertical (GLG_LINE_GRAPH(graph), priv->y_label_text, &priv->y_label_box);
-	}
-
-    if ( ( element & GLG_GRID_LINES ) |
-         ( element & GLG_GRID_MINOR_X ) |
-         ( element & GLG_GRID_MAJOR_X ) |
-         ( element & GLG_GRID_MINOR_Y ) |
-         ( element & GLG_GRID_MAJOR_Y) ) { 
-         glg_line_graph_draw_grid_lines (GLG_LINE_GRAPH(graph));
-    }    
-    if ( element & GLG_GRID_LABELS_X) {
-         glg_line_graph_draw_x_grid_labels (GLG_LINE_GRAPH(graph));
-    }
-    if ( element & GLG_GRID_LABELS_Y) {
-         glg_line_graph_draw_y_grid_labels (GLG_LINE_GRAPH(graph)); 
-    }
-
-    glg_line_graph_data_series_draw_all (GLG_LINE_GRAPH(graph), FALSE); 
-
-    if ( element & GLG_TOOLTIP) {
-         glg_line_graph_draw_tooltip (GLG_LINE_GRAPH(graph)); 
-    }
-
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_draw(exited)");
+        g_debug ("===> glg_line_graph_draw_graph(exited)");
+        glg_duration_us(&duration, "glg_line_graph_draw_graph#TOTAL-TIME");
     }
 	
 	return;	
@@ -1958,6 +2033,8 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
     PGLG_SERIES  psd = NULL;
     GList      *data_sets = NULL;
     gint        v_index = 0;
+    gint64 start_time = glg_duration_us(NULL, NULL);
+    gchar buff[64];
 
     if (glg_flag_debug)
     {
@@ -1975,6 +2052,8 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         if (psd != NULL)
         {                       /* found */
         	glg_line_graph_data_series_draw (graph, psd);
+        	g_snprintf(buff, sizeof(buff), "glg_line_graph_data_series_draw#[%d]Series", v_index);
+        	glg_duration_us(&start_time, buff);
 
             v_index++;
         }
@@ -2017,7 +2096,7 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
     
-    data_sets = g_list_first (priv->lg_series);
+    data_sets = g_list_first (priv->lg_series);  /* Find specified series */
     while (data_sets)
     {
         psd = data_sets->data;
@@ -2062,17 +2141,15 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
     /* record current time with data points */
     if (psd->i_series_id == priv->i_num_series - 1)
     {
-        GList      *gl_remove = NULL;
+        GList *gl_remove = NULL;
 
         if (g_list_length (priv->lg_series_time) == psd->i_max_points +1 )
         {
             gl_remove = g_list_first (priv->lg_series_time);
-            priv->lg_series_time =
-                g_list_remove_all (priv->lg_series_time, gl_remove->data);
+            	priv->lg_series_time = g_list_remove (priv->lg_series_time, gl_remove->data);
         }
         priv->lg_series_time =
-            g_list_append (priv->lg_series_time, GINT_TO_POINTER ((time_t) time (NULL)));  /* TODO: Leaking Memory */
-            
+            g_list_append (priv->lg_series_time, GINT_TO_POINTER ((time_t) time (NULL)));  /* TODO: Leaking Memory - NO time_t is a gint64 */
     }
 
     if (glg_flag_debug)
@@ -2151,11 +2228,10 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
         g_debug ("===> glg_line_graph_data_series_add()");
     }
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
-
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
-
     g_return_val_if_fail (pch_legend_text != NULL, -1);
     g_return_val_if_fail (pch_color_text != NULL, -1);
+
+	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 
     psd = (PGLG_SERIES) g_new0 (GLG_SERIES, 1);
     g_return_val_if_fail (psd != NULL, -1);
@@ -2170,8 +2246,8 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
     
     /*
      * we position x to ticks onlys, 
-     * so force chart to scroll at maximum ticks vs value */
-/*    psd->i_max_points = MIN (priv->x_range.i_max_scale, priv->x_range.i_num_minor); */
+     * so force chart to scroll at maximum ticks vs value
+     * psd->i_max_points = MIN (priv->x_range.i_max_scale, priv->x_range.i_num_minor); */
     psd->i_max_points = priv->x_range.i_max_scale;
         
     gdk_rgba_parse (&psd->legend_color, pch_color_text);
@@ -2198,8 +2274,6 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
 static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventButton * ev)
 {
     GlgLineGraphPrivate *priv;
-    gint        x = 0, y = 0;
-
   
     if (glg_flag_debug)
     {
@@ -2212,20 +2286,20 @@ static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventB
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 1))
     {
         priv->b_tooltip_active = priv->b_tooltip_active ? FALSE : TRUE;    	
-        gdk_window_get_device_position (ev->window, priv->device_pointer, &x, &y, &priv->mouse_state);
-	    priv->mouse_pos.x = x;
-    	    priv->mouse_pos.y = y;
+        gdk_window_get_device_position (ev->window, priv->device_pointer, &priv->mouse_pos.x, &priv->mouse_pos.y, &priv->mouse_state);
         glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
         return TRUE;
     }
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 2) && priv->b_mouse_onoff)
     {   	
         glg_flag_debug = glg_flag_debug ? FALSE : TRUE;
+        glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
         return TRUE;        
     }
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 3))
     {
         priv->b_mouse_onoff = priv->b_mouse_onoff ? FALSE : TRUE;
+        glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
         return TRUE;        
     }
 

@@ -17,6 +17,9 @@ GlgLineGraph
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT GlgLineGraph ##### -->
 <para>
 
@@ -159,6 +162,7 @@ GlgLineGraph
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -220,6 +224,30 @@ GlgLineGraph
 @x_tick_major: 
 @x_scale_min: 
 @x_scale_max: 
+@y_tick_minor: 
+@y_tick_major: 
+@y_scale_min: 
+@y_scale_max: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_x_ranges ##### -->
+<para>
+
+</para>
+
+@graph: 
+@x_tick_minor: 
+@x_tick_major: 
+@x_scale_min: 
+@x_scale_max: 
+
+
+<!-- ##### FUNCTION glg_line_graph_chart_set_y_ranges ##### -->
+<para>
+
+</para>
+
+@graph: 
 @y_tick_minor: 
 @y_tick_major: 
 @y_scale_min: 
