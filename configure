@@ -585,7 +585,6 @@ PACKAGE_STRING='glinegraph-cairo 0.4.0'
 PACKAGE_BUGREPORT='James Scott Jr. skoona@users.sourceforge.net'
 PACKAGE_URL=''
 
-ac_default_prefix=/usr/local
 ac_unique_file="src/lgcairo.c"
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
@@ -4127,7 +4126,7 @@ if test "$ac_res" != no; then :
 fi
 
 
-CFLAGS="-Wall -g -DGSEAL_ENABLE"
+CFLAGS="-Wall -g"
 
 
 
@@ -4695,8 +4694,6 @@ $as_echo "yes" >&6; }
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
 $as_echo "found" >&6; }
 fi
-
-
 
 
 
