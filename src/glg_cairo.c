@@ -132,6 +132,7 @@
  * <example>
  *  <title>Using a GlgLineGraph with standard apis.</title>
  *  <programlisting>
+ *  #include <gtk/gtk.h>
  *  #include <glg_cairo.h>
  *  ...
  * GlgLineGraph *glg = NULL;
@@ -360,7 +361,7 @@ enum _GLG_PROPERTY_ID {
   PROP_SCALE_MAJOR_Y
 } GLG_PROPERTY_ID;
 
-G_DEFINE_TYPE (GlgLineGraph, glg_line_graph, GTK_TYPE_DRAWING_AREA);
+G_DEFINE_TYPE_WITH_PRIVATE (GlgLineGraph, glg_line_graph, GTK_TYPE_DRAWING_AREA);
 
 #define GLG_LINE_GRAPH_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GLG_TYPE_LINE_GRAPH, GlgLineGraphPrivate))
 
@@ -436,7 +437,7 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
     widget_class->destroy    = glg_line_graph_destroy;
 
 	/* GtkWidget signals overrides */
-	widget_class->configure_event 		= glg_line_graph_configure_event;
+//	widget_class->configure_event 		= glg_line_graph_configure_event;
 	widget_class->draw      			    = glg_line_graph_master_draw;
 	widget_class->motion_notify_event 	= glg_line_graph_motion_notify_event;    
   	widget_class->button_press_event  	= glg_line_graph_button_press_event;
@@ -663,6 +664,7 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     /*
      * Create a PangoLayout, get the spacing of one large char to use as a standard */
     layout = gtk_widget_create_pango_layout (GTK_WIDGET(graph), "M");
+
         pango_layout_set_markup (layout, "<b>M</b>", -1);
         pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
         pango_layout_get_pixel_size (layout, &xfactor, &yfactor);
@@ -851,7 +853,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 
 /*
  * This routine is the master paint routine for the line graph
- * it sets up the deminsions of the space and call DRAW to get the graph done
+ * it sets up the dimensions of the space and call DRAW to get the graph done
 */
 static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 {
@@ -859,6 +861,9 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
     GtkWidget   *widget = GTK_WIDGET(graph);
     GtkAllocation allocation;
+    GdkRectangle dirtyRect;
+    gint64 duration = 0;
+    gint64 start_time = g_get_real_time();
 
     cairo_status_t status;
   	
@@ -870,10 +875,19 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	g_return_val_if_fail ( priv != NULL, FALSE);	
 
+
+	status = cairo_status(cr);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		g_message ("GLG-Expose:cairo_create:status %d=%s", status, cairo_status_to_string(status) );
+	}
+
 	gtk_widget_get_allocation(widget, &allocation);
+	gdk_cairo_get_clip_rectangle (cr, &dirtyRect);
 
     if (glg_flag_debug) {
-		g_debug ("glg_line_graph_master_draw(width=%d, height=%d)", allocation.width, allocation.height);
+    	g_debug ("glg_line_graph_master_draw(Allocation ==> width=%d, height=%d,  Dirty Rect ==> x=%d, y=%d, width=%d, height=%d )",
+    	                 allocation.width, allocation.height,
+    	                 dirtyRect.x, dirtyRect.y, dirtyRect.width, dirtyRect.height);
     }
     
 	/* 
@@ -883,21 +897,22 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	chart_set_ranges = MIN (xfactor, yfactor);    
 	g_return_val_if_fail (chart_set_ranges != 0, FALSE);
 
+
+	/*
+	 * Clear existing Surface */
+	cairo_set_source_rgb (cr, 1, 1, 1);
+	cairo_paint (cr);
+
     /* 
      * set a cairo_t */
 	priv->cr = cr;
-
-	status = cairo_status(cr);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		g_message ("GLG-Expose:cairo_create:status %d=%s", status, cairo_status_to_string(status) );
-	}
 
 	/*
 	 * Set the scale to manage our desired user space */
 	if ((allocation.width < GLG_USER_MODEL_X) ||
        (allocation.height < GLG_USER_MODEL_Y)) {
        	
-	    cairo_scale (cr, (gdouble)allocation.width/GLG_USER_MODEL_X,
+	    cairo_scale (priv->cr, (gdouble)allocation.width/GLG_USER_MODEL_X,
 		  		 		 (gdouble)allocation.height/GLG_USER_MODEL_Y);
 		  		 		 
 		if (glg_flag_debug) {
@@ -906,7 +921,8 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 							     (gdouble)allocation.height/GLG_USER_MODEL_Y);
 		}
     }
- 
+
+
 	/* 
 	 * Draw the actual Chart */
     glg_line_graph_draw (graph); 
@@ -914,6 +930,9 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     priv->cr = NULL;
 
     if (glg_flag_debug) {
+    	duration = (g_get_real_time() - start_time);
+    	g_debug("TIME: glg_line_graph_master_draw() duration=%4.3lf ms.", (double)duration/1000);
+//    	start_time = g_get_real_time();
         g_debug ("glg_line_graph_master_draw(exited)");
     }
 
@@ -1235,16 +1254,15 @@ static void glg_line_graph_draw (GtkWidget *graph)
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	
     /* 
-     * draw plot area
-     */
+     * draw plot area */
     cairo_set_source_rgba (priv->cr, (gdouble)priv->chart_color.red,
     								 (gdouble)priv->chart_color.green,
     								 (gdouble)priv->chart_color.blue, 0.5);
-
 	cairo_rectangle (priv->cr, priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
 	cairo_fill_preserve (priv->cr);
-    cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */ 
-	cairo_stroke_preserve (priv->cr);
+    cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */
+    cairo_stroke (priv->cr);
+
 
     if (glg_flag_debug) {
         g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
@@ -1263,7 +1281,8 @@ static void glg_line_graph_draw (GtkWidget *graph)
     }
     if ( element & GLG_TITLE_Y) {
 		glg_line_graph_draw_text_vertical (GLG_LINE_GRAPH(graph), priv->y_label_text, &priv->y_label_box);
-	}   
+	}
+
     if ( ( element & GLG_GRID_LINES ) |
          ( element & GLG_GRID_MINOR_X ) |
          ( element & GLG_GRID_MAJOR_X ) |
@@ -1272,7 +1291,7 @@ static void glg_line_graph_draw (GtkWidget *graph)
          glg_line_graph_draw_grid_lines (GLG_LINE_GRAPH(graph));
     }    
     if ( element & GLG_GRID_LABELS_X) {
-         glg_line_graph_draw_x_grid_labels (GLG_LINE_GRAPH(graph)); 
+         glg_line_graph_draw_x_grid_labels (GLG_LINE_GRAPH(graph));
     }
     if ( element & GLG_GRID_LABELS_Y) {
          glg_line_graph_draw_y_grid_labels (GLG_LINE_GRAPH(graph)); 
@@ -1316,6 +1335,7 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
 
     /*
      * Get pixel size in user space coordinates */
+
   	layout = pango_cairo_create_layout (priv->cr);
 	pango_layout_set_markup (layout, pch_text, -1);
     pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
@@ -1374,45 +1394,45 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 
     priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 
-    /*
-     * Get pixel size in user space coordinates */
-//	cairo_save(priv->cr);
+	cairo_save (priv->cr);
 
-  	layout = pango_cairo_create_layout (priv->cr);
-	pango_layout_set_markup (layout, pch_text, -1);
-    pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
+		/*
+		 * Get pixel size in user space coordinates */
+		layout = pango_cairo_create_layout (priv->cr);
+		pango_layout_set_markup (layout, pch_text, -1);
+		pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
 
-    pango_layout_get_pixel_size (layout, &rect->width, &rect->height);
-    if (priv->plot_box.height > rect->width ) {
-		y_pos = rect->y - ((priv->plot_box.height - rect->width) / 2);
-    } else {
-		y_pos = priv->page_box.height - ((priv->page_box.height - rect->width) / 2);    	
-	}
+		pango_layout_get_pixel_size (layout, &rect->width, &rect->height);
+		if (priv->plot_box.height > rect->width ) {
+			y_pos = rect->y - ((priv->plot_box.height - rect->width) / 2);
+		} else {
+			y_pos = priv->page_box.height - ((priv->page_box.height - rect->width) / 2);
+		}
 
-    if (glg_flag_debug) {
-		g_debug ("Vert:TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d", 
-					y_pos, rect->x, rect->y, rect->width, rect->height);
-    }
+		if (glg_flag_debug) {
+			g_debug ("Vert:TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
+						y_pos, rect->x, rect->y, rect->width, rect->height);
+		}
 
-	/* title_gc */	
-    cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
-    								(gdouble)priv->title_color.green,
-    								(gdouble)priv->title_color.blue);
-	cairo_move_to (priv->cr, rect->x, y_pos); 
+		/* title_gc */
+		cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
+										(gdouble)priv->title_color.green,
+										(gdouble)priv->title_color.blue);
+		cairo_move_to (priv->cr, rect->x, y_pos);
 
-	cairo_rotate(priv->cr, -90 * G_PI / 180.); 
+		cairo_rotate(priv->cr, -90 * G_PI / 180.);
 
-	pango_cairo_update_layout (priv->cr, layout);
-	pango_cairo_show_layout (priv->cr, layout);
-//	cairo_restore(priv->cr);
+		pango_cairo_update_layout (priv->cr, layout);
+		pango_cairo_show_layout (priv->cr, layout);
 
-  	g_object_unref (layout);
+		g_object_unref (layout);
+
+  	cairo_restore (priv->cr);
 
 	if (glg_flag_debug) {
 		g_debug ("Vert.TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
 				  y_pos, rect->x, rect->y, rect->width, rect->height);
 	}
-
 
     return rect->height;
 }
@@ -1457,27 +1477,27 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     x_pos = priv->plot_box.width;
     y_pos = priv->plot_box.y;    
     if (priv->lgflags & GLG_GRID_MINOR_Y) {    
+  		cairo_set_line_width (priv->cr, 1.0);
 	    for (y_index = 0; y_index < count_minor; y_index++)
     	{
     		cairo_move_to (priv->cr, priv->plot_box.x+1, y_pos + (y_minor_inc * (y_index + 1)) );
     		cairo_rel_line_to (priv->cr, x_pos - 2, 0 );
     	}
-  		cairo_set_line_width (priv->cr, 1.0);
-    	cairo_stroke_preserve (priv->cr);
+  		cairo_stroke (priv->cr);
     }
 
 
     x_pos = priv->plot_box.width;
     y_pos = priv->plot_box.y;
     if (priv->lgflags & GLG_GRID_MAJOR_Y) {
+    	cairo_set_line_width (priv->cr, 2.0);
     	for (y_index = 0; y_index < count_major; y_index++)
     	{
 	    	cairo_move_to (priv->cr, priv->plot_box.x, y_pos + (y_major_inc * (y_index + 1)) );
     		cairo_rel_line_to (priv->cr, x_pos - 2, 0 );
     	}
-    	cairo_set_line_width (priv->cr, 2.0);
-    	cairo_stroke_preserve (priv->cr);
-        cairo_set_line_width (priv->cr, 1.0);
+    	cairo_stroke (priv->cr);
+    	cairo_set_line_width (priv->cr, 1.0);
     }
 
 
@@ -1495,25 +1515,25 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     x_pos = priv->plot_box.x;
     y_pos = priv->plot_box.height;
     if (priv->lgflags & GLG_GRID_MINOR_X) {
+  		cairo_set_line_width (priv->cr, 1.0);
     	for (x_index = 0; x_index < count_minor; x_index++)
     	{
     		cairo_move_to (priv->cr, priv->plot_box.x + (x_minor_inc * (x_index + 1)), priv->plot_box.y +1 ); 
     		cairo_line_to (priv->cr, priv->plot_box.x + (x_minor_inc * (x_index + 1)), priv->plot_box.y + y_pos -1 );
     	}
-  		cairo_set_line_width (priv->cr, 1.0);
-    	cairo_stroke_preserve (priv->cr);
+  		cairo_stroke (priv->cr);
     }
 
     x_pos = priv->plot_box.x;
     y_pos = priv->plot_box.height;
     if (priv->lgflags & GLG_GRID_MAJOR_X) {
+		cairo_set_line_width (priv->cr, 2.0);
 	    for (x_index = 0; x_index < count_major; x_index++)
 	    {
 	    	cairo_move_to (priv->cr, priv->plot_box.x + (x_major_inc * (x_index + 1)), priv->plot_box.y +1 ); 
     		cairo_line_to (priv->cr, priv->plot_box.x + (x_major_inc * (x_index + 1)), priv->plot_box.y  + y_pos );
 	    }
-		cairo_set_line_width (priv->cr, 2.0);
-    	cairo_stroke_preserve (priv->cr);
+    	cairo_stroke(priv->cr);
 		cairo_set_line_width (priv->cr, 1.0);        
     }
     
@@ -1830,11 +1850,11 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
     								 (gdouble)priv->window_color.blue);
     cairo_rectangle (priv->cr, priv->tooltip_box.x, priv->tooltip_box.y, 
     						   priv->tooltip_box.width, priv->tooltip_box.height);
-    cairo_fill_preserve (priv->cr);
+    cairo_fill (priv->cr);
     cairo_set_source_rgb (priv->cr, (gdouble)priv->scale_color.red,
     								 (gdouble)priv->scale_color.green,
     								 (gdouble)priv->scale_color.blue);
-    cairo_stroke_preserve (priv->cr);
+    cairo_stroke (priv->cr);
 
     cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
     								 (gdouble)priv->scale_color.green,
@@ -1872,7 +1892,6 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		return 1;
 	}
 
-
     cairo_set_source_rgb (priv->cr, (gdouble)psd->legend_color.red,
                                      (gdouble)psd->legend_color.green,
                                      (gdouble)psd->legend_color.blue);
@@ -1898,7 +1917,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		cairo_move_to (priv->cr, point_pos[0].x, point_pos[0].y);
 		cairo_arc (priv->cr, point_pos[0].x, point_pos[0].y, 3., 0., 360 * M_PI);
 		
-		cairo_fill_preserve(priv->cr);
+		cairo_fill(priv->cr);
         return 1;
     }
 
@@ -1916,7 +1935,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 			cairo_line_to (priv->cr, point_pos[v_index].x, point_pos[v_index].y);
 		}
     }
-    cairo_stroke_preserve (priv->cr);
+    cairo_stroke (priv->cr);
 
 	cairo_set_line_width (priv->cr, 2.0);
     for (v_index = 0; v_index < psd->i_point_count ; v_index++)
@@ -1924,8 +1943,8 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
 		 cairo_move_to (priv->cr, point_pos[v_index].x , point_pos[v_index].y );
 		 cairo_arc (priv->cr, point_pos[v_index].x , point_pos[v_index].y , 3.0, 0., 360 * M_PI);
     }
-    cairo_fill_preserve(priv->cr);
-	
+	 cairo_fill(priv->cr);
+
     return v_index;
 }
 
@@ -1955,7 +1974,8 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         psd = data_sets->data;
         if (psd != NULL)
         {                       /* found */
-            glg_line_graph_data_series_draw (graph, psd);
+        	glg_line_graph_data_series_draw (graph, psd);
+
             v_index++;
         }
         data_sets = g_list_next (data_sets);

@@ -15,7 +15,7 @@ AC_ISC_POSIX
 
 dnl
 dnl stricter options -ansi -pedantic
-CFLAGS="-Wall -g -DGSEAL_ENABLE"
+CFLAGS="-Wall -g"
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
@@ -33,9 +33,7 @@ dnl
 dnl put constant on command line and not in a config.h file
 dnl AC_CONFIG_HEADER(config.h) dnl
 
-AC_PREFIX_DEFAULT(/usr/local)
 AC_CONFIG_SRCDIR(src/lgcairo.c)
-
 AC_CONFIG_FILES([Makefile src/Makefile docs/reference/Makefile])
 
 AC_OUTPUT

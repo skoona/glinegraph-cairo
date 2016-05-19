@@ -10,6 +10,8 @@ glg_line_graph_chart_set_elements
 glg_line_graph_chart_set_text
 glg_line_graph_chart_set_color
 glg_line_graph_chart_set_ranges
+glg_line_graph_chart_set_x_ranges
+glg_line_graph_chart_set_y_ranges
 glg_line_graph_data_series_add
 glg_line_graph_data_series_add_value
 <SUBSECTION Standard>
