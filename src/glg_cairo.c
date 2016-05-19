@@ -273,7 +273,8 @@ typedef struct _GLG_RANGES {
 /* 
  * widget private data structure 
 */
-typedef struct _GlgLineGraphPrivate
+typedef struct _GlgLineGraphPrivate GlgLineGraphPrivate;
+struct _GlgLineGraphPrivate
 {
     gint        cb_id;			  /* structure id */	
     GLGElementID lgflags;         /* things to be drawn */
@@ -323,7 +324,7 @@ typedef struct _GlgLineGraphPrivate
     /* chart scales */
     GLG_RANGE    x_range;   /* scale mechanics */
     GLG_RANGE    y_range;	/* scale mechanics */
-} GlgLineGraphPrivate;
+};
 
 /* 
  * Internal working structure ids 
@@ -604,7 +605,8 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 	}
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	
 	
 	priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (GTK_WIDGET (graph)) );
 	priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
@@ -2187,11 +2189,11 @@ static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph)
         psd = data_sets->data;
         g_free (psd->lg_point_dvalue);
         g_free (psd->point_pos);
-        g_free (psd);
+        // g_free (psd);
         data_sets = g_list_next (data_sets);
         i_count++;
     }
-    g_list_free (priv->lg_series);
+    g_list_free_full (priv->lg_series, g_free);
     g_list_free (priv->lg_series_time);
     priv->lg_series = NULL;
     priv->lg_series_time = NULL;

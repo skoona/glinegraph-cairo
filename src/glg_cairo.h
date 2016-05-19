@@ -30,20 +30,22 @@
 
 G_BEGIN_DECLS
 
+
 typedef struct _GlgLineGraph  GlgLineGraph;
 typedef struct _GlgLineGraphClass GlgLineGraphClass;
+
 
 /**
  * GlgLineGraphClass:
  * @point-selected: signal to return the y value under or near the mouse.
- * @graph: pointer to a #GlgLineGraph widget 
+ * @graph: pointer to a #GlgLineGraph widget
  * @x_value: x scale value
  * @y_value: y scale value
  * @point_y_pos: y value pixel position on chart
  * @mouse_y_pos: actual mouse y position on chart
- *  
+ *
  * Main widget Class structure
- */ 
+ */
 struct _GlgLineGraphClass
 {
 	GtkDrawingAreaClass parent_class;
@@ -62,6 +64,7 @@ struct _GlgLineGraph
 
 	/* < private > */
 };
+
 
 /**
  * GLGElementID:

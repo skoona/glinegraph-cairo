@@ -4692,8 +4692,6 @@ fi
 
 CFLAGS="-Wall -g"
 
-# AC_SUBST(CPPFLAGS)
-# AC_SUBST(LDFLAGS)
 
 
 

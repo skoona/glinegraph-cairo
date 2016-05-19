@@ -84,17 +84,41 @@ int main (int argc, char **argv)
 	/*
 	 * Create a new line graph
 	 */
-	glg = glg_line_graph_new();
-		gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));    
+//	glg = glg_line_graph_new();
+//		gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
 
+	/*
+	 * Create Graph -- Alternate Init Method
+	 * and set all its options in one call */
+	glg = g_object_new (GLG_TYPE_LINE_GRAPH,
+			"chart-set-elements", GLG_TOOLTIP | GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y | GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y | GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y | GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
+			"range-tick-minor-x", 2,
+			"range-tick-major-x", 10,
+			"range-scale-minor-x", 0,
+			"range-scale-major-x", 100,
+			"range-tick-minor-y", 2,
+			"range-tick-major-y", 10,
+			"range-scale-minor-y", 0,
+			"range-scale-major-y", 110,
+			"series-line-width", 2,
+			"graph-title-foreground",  "blue",
+			"graph-scale-foreground",  "black",
+			"graph-chart-background",  "light blue",
+			"graph-window-background", "white",
+			"text-title-main", "<big><b>A GTK Line Graph Widget</b></big>\n<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
+			"text-title-yaxis", "Pango Text Markup is Supported!\n<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
+			"text-title-xaxis", "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
+			NULL);
+
+	gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
  /* 
   * set which elements of chart are visible */     
-	g_object_set (glg, "chart-set-elements", GLG_TOOLTIP | 
-					GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |
-                 	GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y |
-                 	GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y |   
-					GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,                      
-                     			      NULL); 
+//	g_object_set (glg, "chart-set-elements", GLG_TOOLTIP |
+//					GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |
+//                 	GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y |
+//                 	GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y |
+//					GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
+//                     			      NULL);
           
  /* 
   * IMPORTANT
@@ -105,44 +129,44 @@ int main (int argc, char **argv)
   * 
   * Also can only be set once, recreate graph widget to change this value
   */   					
-    g_object_set (glg,  
-    			"range-tick-minor-x", 2,
-    			"range-tick-major-x", 10,
-    			"range-scale-minor-x", 0,
-    			"range-scale-major-x", 100,
-    			"range-tick-minor-y", 2,
-    			"range-tick-major-y", 10,
-    			"range-scale-minor-y", 0,
-    			"range-scale-major-y", 110,
-    			NULL);
+//    g_object_set (glg,
+//    			"range-tick-minor-x", 2,
+//    			"range-tick-major-x", 10,
+//    			"range-scale-minor-x", 0,
+//    			"range-scale-major-x", 100,
+//    			"range-tick-minor-y", 2,
+//    			"range-tick-major-y", 10,
+//    			"range-scale-minor-y", 0,
+//    			"range-scale-major-y", 110,
+//    			NULL);
     
  /* 
   * set size of data series lines drawing width */    
-    g_object_set (glg, "series-line-width", 2, NULL);
+//    g_object_set (glg, "series-line-width", 2, NULL);
 
  /* 
   * set chart foreground and background colors */
-    g_object_set (glg,  "graph-title-foreground",  "blue",
-    					"graph-scale-foreground",  "black",
-     					"graph-chart-background",  "light blue",
-     					"graph-window-background", "white", 
-     					NULL);
+//    g_object_set (glg,  "graph-title-foreground",  "blue",
+//    					"graph-scale-foreground",  "black",
+//     					"graph-chart-background",  "light blue",
+//     					"graph-window-background", "white",
+//     					NULL);
 
  /* 
   * set chart titles */
-    g_object_set (glg,  "text-title-main",
-	  "<big><b>A GTK Line Graph Widget</b></big>\n"
-      "<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
-          		NULL); 	
+//    g_object_set (glg,  "text-title-main",
+//	  "<big><b>A GTK Line Graph Widget</b></big>\n"
+//      "<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
+//          		NULL);
 
-    g_object_set (glg, "text-title-yaxis",
-	  "Pango Text Markup is Supported!\n"
-	  "<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
-          					NULL); 	
+//    g_object_set (glg, "text-title-yaxis",
+//	  "Pango Text Markup is Supported!\n"
+//	  "<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
+//          					NULL);
           					 
-    g_object_set (glg, "text-title-xaxis",
-      "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
-        					NULL);
+//    g_object_set (glg, "text-title-xaxis",
+//      "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
+//        					NULL);
 
 	/*
 	 * setup to catch tooltip drill downs 

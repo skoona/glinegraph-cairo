@@ -26,8 +26,6 @@ dnl
 dnl stricter options -ansi -pedantic
 CFLAGS="-Wall -g"
 AC_SUBST(CFLAGS)
-# AC_SUBST(CPPFLAGS)
-# AC_SUBST(LDFLAGS)
 
 dnl
 dnl put constant on command line and not in a config.h file
