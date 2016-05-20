@@ -1,4 +1,6 @@
-GlgLineGraph (a.k.a cairo version of glinegraph )  July 2007
+#GlgLineGraph (a.k.a cairo version of glinegraph )  July 2007/2016
+
+![GLineGraph Widget](https://github.com/skoona/glinegraph-cairo/raw/master/glg_cairo.png) 
 
     A Gtk3/GLib2/cario GUI application which demonstrates the use of GTK+ for
  producing xy line graphs.  This widget once created allows you to add one or more
@@ -29,7 +31,7 @@ FEATURES:
 
 REQUIREMENTS:
 
-	Gtk3/Glib-2.8 runtime support. (Created on Fedora Core 6)
+	Gtk3/Glib2 runtime support. (Created on Fedora Core 6)
 
 	* the following packages may need to be installed to build program and
 	  for runtime of binaries on some platforms.
