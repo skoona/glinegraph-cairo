@@ -72,7 +72,7 @@ KNOWN BUGS:
     Related to 'Draw' signal and cairo surface used for painting: first pass 4ms, each pass adds 300ms more
     until the time to draw is greater than the arrival on new data points, causing a draw backlog.
 	
-	Not sure if it is a GTK3 issue or not Gtk 3.10 sufferes, Gtk 3.16 struggles.
+	Not sure if it is a GTK3 issue or not Gtk 3.10 sufferes, Gtk 3.16 is reasonable, Gtk 3.18 also suffers.
 
 
 
