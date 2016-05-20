@@ -48,9 +48,14 @@ typedef struct _GlgLineGraphClass GlgLineGraphClass;
  */
 struct _GlgLineGraphClass
 {
-	GtkDrawingAreaClass parent_class;
+    GtkWidgetClass parent_class;
 
-	void	(* point_selected)	(GtkWidget *graph, double x_value, double y_value, double point_y_pos, double mouse_y_pos);
+	void	(* point_selected)	(GlgLineGraph *graph, double x_value, double y_value, double point_y_pos, double mouse_y_pos);
+    /* Padding for future expansion */
+    void (*_glg_reserved1) (void);
+    void (*_glg_reserved2) (void);
+    void (*_glg_reserved3) (void);
+    void (*_glg_reserved4) (void);
 };
 
 /**
@@ -60,7 +65,7 @@ struct _GlgLineGraphClass
  */
 struct _GlgLineGraph
 {
-	GtkDrawingArea parent;
+	GtkWidget parent;
 
 	/* < private > */
 };
@@ -68,8 +73,32 @@ struct _GlgLineGraph
 
 /**
  * GLGElementID:
- * @GLG_TITLE_X:     Enables display of the top chart title
- * @GLG_NO_TITLE_X:  Disables display of the top chart title
+ * @GLG_TITLE_X:     Enables display of the bottom chart title
+ * @GLG_NO_TITLE_X:  Disables display of the bottom chart title
+ * @GLG_TITLE_Y:    Enables display of the left/vertical chart title
+ * @GLG_NO_TITLE_Y: Disables display of the left/vertical chart title
+ * @GLG_TITLE_T:    Enables display of the top chart title
+ * @GLG_NO_TITLE_T: Disables display of the top chart title
+ * @GLG_GRID_LABELS_X:
+ * @GLG_NO_GRID_LABELS_X:
+ * @GLG_GRID_LABELS_Y:
+ * @GLG_NO_GRID_LABELS_Y:
+ * @GLG_TOOLTIP:
+ * @GLG_NO_TOOLTIP:
+ * @GLG_GRID_LINES:
+ * @GLG_NO_GRID_LINES:
+ * @GLG_GRID_MINOR_X:
+ * @GLG_NO_GRID_MINOR_X:
+ * @GLG_GRID_MAJOR_X:
+ * @GLG_NO_GRID_MAJOR_X:
+ * @GLG_GRID_MINOR_Y:
+ * @GLG_NO_GRID_MINOR_Y:
+ * @GLG_GRID_MAJOR_Y:
+ * @GLG_NO_GRID_MAJOR_Y:
+ * @GLG_SCALE:   chart color key -- used to change chart scale/labels color
+ * @GLG_TITLE:   chart color key -- used to change top title color
+ * @GLG_WINDOW:  chart color key -- used to change window color
+ * @GLG_CHART:   chart color key -- used to change chart color
  * 
  * Communication params for interface APIs
  */
@@ -128,7 +157,7 @@ typedef enum _GLG_Graph_Elements {
  * Public Interfaces 
 */
 extern GlgLineGraph *  glg_line_graph_new (void);
-extern GType        glg_line_graph_get_type  (void) G_GNUC_CONST;
+extern GType    glg_line_graph_get_type (void) G_GNUC_CONST;
 extern void 		glg_line_graph_redraw (GlgLineGraph *graph);
 extern GLGElementID glg_line_graph_chart_get_elements ( GlgLineGraph *graph);
 extern void 		glg_line_graph_chart_set_elements ( GlgLineGraph *graph, GLGElementID element);

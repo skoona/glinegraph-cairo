@@ -69,7 +69,7 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
  */
 int main (int argc, char **argv)
 {
-	GtkWidget *window;
+	GtkWidget *window, *frame;
 	GlgLineGraph *glg;
 	guint  ui_add_values = 0; 
 
@@ -81,11 +81,19 @@ int main (int argc, char **argv)
 	g_signal_connect (window, "destroy",
 					  G_CALLBACK (gtk_main_quit), NULL);
 	
-	/*
-	 * Create a new line graph
-	 */
-//	glg = glg_line_graph_new();
-//		gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
+	frame = gtk_frame_new (NULL);
+	    gtk_frame_set_shadow_type (GTK_FRAME(frame), GTK_SHADOW_ETCHED_IN);
+	    gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(frame));
+
+        /*
+         * IMPORTANT
+         * set chart x and y increments and ranges
+         * it is important to make tick-minor-x as small as possible or 1
+         * and to also limit the scale-major-x to a value less than 100
+         * otherwise the chart gets too busy.
+         *
+         * Also can only be set once, recreate graph widget to change this value
+         */
 
 	/*
 	 * Create Graph -- Alternate Init Method
@@ -110,63 +118,8 @@ int main (int argc, char **argv)
 			"text-title-xaxis", "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
 			NULL);
 
-	gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
- /* 
-  * set which elements of chart are visible */     
-//	g_object_set (glg, "chart-set-elements", GLG_TOOLTIP |
-//					GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |
-//                 	GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y |
-//                 	GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y |
-//					GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
-//                     			      NULL);
+	gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(glg));
           
- /* 
-  * IMPORTANT
-  * set chart x and y increments and ranges 
-  * it is important to make tick-minor-x as small as possible or 1
-  * and to also limit the scale-major-x to a value less than 100
-  * otherwise the chart gets too busy.
-  * 
-  * Also can only be set once, recreate graph widget to change this value
-  */   					
-//    g_object_set (glg,
-//    			"range-tick-minor-x", 2,
-//    			"range-tick-major-x", 10,
-//    			"range-scale-minor-x", 0,
-//    			"range-scale-major-x", 100,
-//    			"range-tick-minor-y", 2,
-//    			"range-tick-major-y", 10,
-//    			"range-scale-minor-y", 0,
-//    			"range-scale-major-y", 110,
-//    			NULL);
-    
- /* 
-  * set size of data series lines drawing width */    
-//    g_object_set (glg, "series-line-width", 2, NULL);
-
- /* 
-  * set chart foreground and background colors */
-//    g_object_set (glg,  "graph-title-foreground",  "blue",
-//    					"graph-scale-foreground",  "black",
-//     					"graph-chart-background",  "light blue",
-//     					"graph-window-background", "white",
-//     					NULL);
-
- /* 
-  * set chart titles */
-//    g_object_set (glg,  "text-title-main",
-//	  "<big><b>A GTK Line Graph Widget</b></big>\n"
-//      "<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
-//          		NULL);
-
-//    g_object_set (glg, "text-title-yaxis",
-//	  "Pango Text Markup is Supported!\n"
-//	  "<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
-//          					NULL);
-          					 
-//    g_object_set (glg, "text-title-xaxis",
-//      "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
-//        					NULL);
 
 	/*
 	 * setup to catch tooltip drill downs 

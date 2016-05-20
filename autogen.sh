@@ -18,6 +18,8 @@ if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
         echo "" >&2
 fi
 
+gtkdocize || exit 1
+
 # if the AC_CONFIG_MACRO_DIR() macro is used, create that directory
 # This is a automake bug fixed in automake 1.13.2
 # See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=13514
