@@ -1,4 +1,5 @@
-#GlgLineGraph (a.k.a cairo version of glinegraph )  July 2007/2016
+#GlgLineGraph
+### (a.k.a cairo version of glinegraph )  July 2007/2016
 
 ![GLineGraph Widget](https://github.com/skoona/glinegraph-cairo/raw/master/glg_cairo.png) 
 
@@ -16,6 +17,7 @@
 There is also gtk-style API documentation in ./src/docs/reference/html/index.html
 
 FEATURES: 
+
     * GlgLineGraph API Reference Manual in ./src/docs/reference/html/index.html
     * Unlimited data series support.
     * Accurate scaling across a wide range of X & Y scales.
