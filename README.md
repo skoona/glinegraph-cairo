@@ -28,7 +28,7 @@ FEATURES:
 
 REQUIREMENTS:
 
-	Gtk3/Glib2 runtime support. (Created on Fedora Core 6)
+	Gtk3/Glib2 runtime support.
 
 	* the following packages may need to be installed to build program and
 	  for runtime of binaries on some platforms.
