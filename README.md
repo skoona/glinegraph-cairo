@@ -1331,6 +1331,164 @@ BEGIN DEBUG LOG:
 		** (lgcairo:51717): DEBUG: glg_line_graph_master_draw(Allocation ==> width=540, height=260,  Dirty Rect ==> x=0, y=0, width=540, height=260 )
 		** (lgcairo:51717): DEBUG: DURATION: glg_line_graph_master_draw#TOTAL-TIME() duration=1.348 ms.
 		** (lgcairo:51717): DEBUG: glg_line_graph_master_draw(exited)
+    
+### After 100 datapoint have been added	
+	
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_motion_notify_event_cb()
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(entered)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#PlotArea() duration=0.346 ms.
+	** (lgcairo:55168): DEBUG: Chart.Surface: pg.Width=682, pg.Height=413, Plot Area x=69 y=93 width=600, height=275
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=5, cx=600, cy=40
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=255, y_pos=8,  cx=228, cy=36
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Top-Title() duration=0.275 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=383, cx=600, cy=25
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=223, y_pos=390,  cx=291, cy=16
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Title() duration=0.168 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_vertical()
+	** (lgcairo:55168): DEBUG: Vert:TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: Vert.TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Title() duration=0.284 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_grid_lines()
+	** (lgcairo:55168): DEBUG: Draw.Y-GridLines: count_major=10, count_minor=54, y_minor_inc=5, y_major_inc=25
+	** (lgcairo:55168): DEBUG: Draw.X-GridLines: count_major=9, count_minor=49, x_minor_inc=12, x_major_inc=60
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#GridLines() duration=0.401 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_x_grid_labels()
+	** (lgcairo:55168): DEBUG: Scale:Labels:X small font sizes cx=20, cy=11
+	** (lgcairo:55168): DEBUG: Scale:Labels:X plot_box.cx=600, layout.cx=620, layout.cy=11
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Labels() duration=0.324 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_y_grid_labels()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Labels() duration=0.263 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw_all(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[0]Series() duration=344.237 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[1]Series() duration=347.067 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[2]Series() duration=470.035 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[3]Series() duration=301.834 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[4]Series() duration=395.792 ms.
+	** (lgcairo:55168): DEBUG: glg_line_graph_data_series_draw_all(exited): #series=5
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Series-All() duration=1859.131 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_tooltip()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Tooltip() duration=0.034 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(exited)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#TOTAL-TIME() duration=1861.297 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(exited)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_master_draw(entered)
+	** (lgcairo:55168): DEBUG: glg_line_graph_master_draw(Allocation ==> width=682, height=413,  Dirty Rect ==> x=1, y=1, width=681, height=412 )
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_master_draw#TOTAL-TIME() duration=2.451 ms.
+	** (lgcairo:55168): DEBUG: glg_line_graph_master_draw(exited)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_motion_notify_event_cb()
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(entered)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#PlotArea() duration=0.307 ms.
+	** (lgcairo:55168): DEBUG: Chart.Surface: pg.Width=682, pg.Height=413, Plot Area x=69 y=93 width=600, height=275
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=5, cx=600, cy=40
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=255, y_pos=8,  cx=228, cy=36
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Top-Title() duration=0.264 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=383, cx=600, cy=25
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=223, y_pos=390,  cx=291, cy=16
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Title() duration=0.177 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_vertical()
+	** (lgcairo:55168): DEBUG: Vert:TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: Vert.TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Title() duration=0.307 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_grid_lines()
+	** (lgcairo:55168): DEBUG: Draw.Y-GridLines: count_major=10, count_minor=54, y_minor_inc=5, y_major_inc=25
+	** (lgcairo:55168): DEBUG: Draw.X-GridLines: count_major=9, count_minor=49, x_minor_inc=12, x_major_inc=60
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#GridLines() duration=0.397 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_x_grid_labels()
+	** (lgcairo:55168): DEBUG: Scale:Labels:X small font sizes cx=20, cy=11
+	** (lgcairo:55168): DEBUG: Scale:Labels:X plot_box.cx=600, layout.cx=620, layout.cy=11
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Labels() duration=0.303 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_y_grid_labels()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Labels() duration=0.213 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw_all(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[0]Series() duration=293.803 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[1]Series() duration=312.114 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[2]Series() duration=471.317 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[3]Series() duration=262.875 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[4]Series() duration=379.315 ms.
+	** (lgcairo:55168): DEBUG: glg_line_graph_data_series_draw_all(exited): #series=5
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Series-All() duration=1719.583 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_tooltip()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Tooltip() duration=0.035 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(exited)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#TOTAL-TIME() duration=1721.665 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(exited)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_add_value()
+	** (lgcairo:55168): DEBUG:   ==>DataSeriesAddValue: series=0, value=12.8, index=100, count=101, max_pts=100
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_add_value()
+	** (lgcairo:55168): DEBUG:   ==>DataSeriesAddValue: series=1, value=20.7, index=100, count=101, max_pts=100
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_add_value()
+	** (lgcairo:55168): DEBUG:   ==>DataSeriesAddValue: series=2, value=82.7, index=100, count=101, max_pts=100
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_add_value()
+	** (lgcairo:55168): DEBUG:   ==>DataSeriesAddValue: series=3, value=83.0, index=100, count=101, max_pts=100
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_add_value()
+	** (lgcairo:55168): DEBUG:   ==>DataSeriesAddValue: series=4, value=98.9, index=100, count=101, max_pts=100
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(entered)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#PlotArea() duration=0.405 ms.
+	** (lgcairo:55168): DEBUG: Chart.Surface: pg.Width=682, pg.Height=413, Plot Area x=69 y=93 width=600, height=275
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=5, cx=600, cy=40
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=255, y_pos=8,  cx=228, cy=36
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Top-Title() duration=0.294 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_horizontal()
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Page cx=682, cy=413
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Orig: x=69, y=383, cx=600, cy=25
+	** (lgcairo:55168): DEBUG: Horiz.TextBox:Calc x_pos=223, y_pos=390,  cx=291, cy=16
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Title() duration=0.176 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_text_vertical()
+	** (lgcairo:55168): DEBUG: Vert:TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: Vert.TextBox: y_pos=340,  x=5, y=368, cx=218, cy=30
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Title() duration=0.315 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_grid_lines()
+	** (lgcairo:55168): DEBUG: Draw.Y-GridLines: count_major=10, count_minor=54, y_minor_inc=5, y_major_inc=25
+	** (lgcairo:55168): DEBUG: Draw.X-GridLines: count_major=9, count_minor=49, x_minor_inc=12, x_major_inc=60
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#GridLines() duration=0.567 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_x_grid_labels()
+	** (lgcairo:55168): DEBUG: Scale:Labels:X small font sizes cx=20, cy=11
+	** (lgcairo:55168): DEBUG: Scale:Labels:X plot_box.cx=600, layout.cx=620, layout.cy=11
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#X-Labels() duration=0.349 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_y_grid_labels()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Y-Labels() duration=0.301 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw_all(entered)
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[0]Series() duration=303.242 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[1]Series() duration=320.944 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[2]Series() duration=428.556 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[3]Series() duration=256.884 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_data_series_draw()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_data_series_draw#[4]Series() duration=373.631 ms.
+	** (lgcairo:55168): DEBUG: glg_line_graph_data_series_draw_all(exited): #series=5
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Series-All() duration=1683.397 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_tooltip()
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#Tooltip() duration=0.027 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_draw_graph(exited)
+	** (lgcairo:55168): DEBUG: DURATION: glg_line_graph_draw_graph#TOTAL-TIME() duration=1685.914 ms.
+	** (lgcairo:55168): DEBUG: ===> glg_line_graph_redraw(exited)
+
 		
 		** (lgcairo:51717): DEBUG: ===> glg_line_graph_destroy(enter)
 		** (lgcairo:51717): DEBUG: ===> glg_line_graph_data_series_remove_all()
