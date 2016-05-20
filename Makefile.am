@@ -9,7 +9,7 @@ sysconfdir = /etc
 datadir = $(prefix)/share
   						
 glinegraph_cairodocdir = $(datadir)/doc/glinegraph-cairo
-glinegraph_cairodoc_DATA =	README \
+glinegraph_cairodoc_DATA =	README.md \
 						COPYING \
 						AUTHORS \
 						INSTALL \
