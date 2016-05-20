@@ -80,10 +80,10 @@ BEGIN DEBUG LOG:
 
 ### To see console log -- $ export G_MESSAGES_DEBUG=all
 
-		[jscott@jscott5365m GLG-Cairo]$ pkg-config --modversion gtk+-3.0
+		[jscott@jscott5365m OSX El-Capitan GLG-Cairo]$ pkg-config --modversion gtk+-3.0
 		3.16.6
 		
-		[jscott@jscott5365m glinegraph-cairo]$ src/lgcairo 
+		[jscott@jscott5365m OSX El-Capitan glinegraph-cairo]$ src/lgcairo 
 
 		** (lgcairo:51717): DEBUG: ===> glg_line_graph_class_init()
 		** (lgcairo:51717): DEBUG: ===> glg_line_graph_init()
