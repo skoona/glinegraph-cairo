@@ -20,7 +20,10 @@ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 dnl
 dnl Check for Gtk+ Libraries
 dnl
-PKG_CHECK_MODULES(GTK, [[gtk+-3.0 >= 3.10] [glib-2.0 >= 2.40 ]], AC_MSG_RESULT(found), AC_MSG_ERROR([AC_PACKAGE_NAME AC_PACKAGE_VERSION needs GTK3 and GLIB2]) )
+PKG_CHECK_MODULES(GTK, [[gtk+-3.0 >= 3.10] [glib-2.0 >= 2.40 ]], 
+    AC_MSG_RESULT(found), 
+    AC_MSG_ERROR([AC_PACKAGE_NAME AC_PACKAGE_VERSION needs GTK3 and GLIB2]) 
+)
 
 dnl
 dnl stricter options -ansi -pedantic
