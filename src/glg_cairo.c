@@ -2121,7 +2121,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
 	GlgLineGraphPrivate *priv;
     PGLG_SERIES  psd = NULL;
     GList      *data_sets = NULL;
-    gint        v_index = 0;
+    gint        v_index = 0, points = 0;
     gint64 start_time = glg_duration_us(NULL, NULL);
     gchar buff[64];
 
@@ -2140,7 +2140,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         psd = data_sets->data;
         if (psd != NULL)
         {                       /* found */
-        	glg_line_graph_data_series_draw (graph, psd);
+        points = glg_line_graph_data_series_draw (graph, psd);
         	g_snprintf(buff, sizeof(buff), "glg_line_graph_data_series_draw#[%d]Series", v_index);
         	glg_duration_us(&start_time, buff);
 
@@ -2151,7 +2151,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
 
     if (glg_flag_debug)
     {
-        g_debug ("glg_line_graph_data_series_draw_all(exited): #series=%d", v_index);
+        g_debug ("glg_line_graph_data_series_draw_all(exited): #series=%d, #points=%d", v_index, points);
     }
 
     return v_index;
