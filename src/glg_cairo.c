@@ -671,7 +671,7 @@ static void glg_line_graph_realize (GtkWidget *widget)
                                &attributes, attributes_mask);
       gtk_widget_register_window (widget, window);
       gtk_widget_set_window (widget, window);
-//      gdk_window_set_user_data (window, GTK_WIDGET(widget));
+      gdk_window_set_user_data (window, GTK_WIDGET(widget));
 
       priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
 
@@ -2471,8 +2471,9 @@ static void glg_line_graph_destroy (GtkWidget *object)
       priv->y_label_text = NULL;
       priv->page_title_text = NULL;
 
-      gtk_widget_unregister_window (widget, gtk_widget_get_window(widget));
       cairo_surface_destroy(priv->surface);
+
+//      gtk_widget_unregister_window (widget, gtk_widget_get_window(widget));
 
       if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy != NULL)
       {

@@ -80,10 +80,6 @@ int main (int argc, char **argv)
 	gtk_window_set_default_size (GTK_WINDOW(window), 540, 260);	
 	g_signal_connect (window, "destroy",
 					  G_CALLBACK (gtk_main_quit), NULL);
-	
-	frame = gtk_frame_new (NULL);
-	    gtk_frame_set_shadow_type (GTK_FRAME(frame), GTK_SHADOW_ETCHED_OUT);
-	    gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(frame));
 
         /*
          * IMPORTANT
@@ -118,7 +114,7 @@ int main (int argc, char **argv)
 			"text-title-xaxis", "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
 			NULL);
 
-	gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(glg));
+	gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
           
 
 	/*
