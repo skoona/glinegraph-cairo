@@ -612,6 +612,9 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 	
 	glg_flag_debug = TRUE;
 
+	gtk_widget_set_has_window (GTK_WIDGET(graph), TRUE);
+	gtk_widget_set_app_paintable (GTK_WIDGET(graph), TRUE);
+
 	priv->cb_id = GLG_PRIVATE_ID;
 	priv->b_tooltip_active = FALSE;
 	priv->b_mouse_onoff = FALSE;
@@ -668,6 +671,8 @@ static void glg_line_graph_realize (GtkWidget *widget)
                                &attributes, attributes_mask);
       gtk_widget_register_window (widget, window);
       gtk_widget_set_window (widget, window);
+//      gdk_window_set_user_data (window, GTK_WIDGET(widget));
+
       priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
 
       priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (widget) );
@@ -2079,7 +2084,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
                          (gdouble) priv->y_range.i_max_scale)));
 
 		cairo_move_to (priv->cr, point_pos[0].x, point_pos[0].y);
-		cairo_arc (priv->cr, point_pos[0].x, point_pos[0].y, 3., 0., 360 * M_PI);
+		cairo_arc (priv->cr, point_pos[0].x, point_pos[0].y, 3., 0., 2 * M_PI);
 		
 		cairo_fill(priv->cr);
         return 1;
@@ -2105,7 +2110,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
     for (v_index = 0; v_index < psd->i_point_count ; v_index++)
     {
 		 cairo_move_to (priv->cr, point_pos[v_index].x , point_pos[v_index].y );
-		 cairo_arc (priv->cr, point_pos[v_index].x , point_pos[v_index].y , 3.0, 0., 360 * M_PI);
+		 cairo_arc (priv->cr, point_pos[v_index].x , point_pos[v_index].y , 3.0, 0., 2 * M_PI);
     }
 	 cairo_fill(priv->cr);
 
@@ -2465,6 +2470,9 @@ static void glg_line_graph_destroy (GtkWidget *object)
       priv->x_label_text = NULL;
       priv->y_label_text = NULL;
       priv->page_title_text = NULL;
+
+      gtk_widget_unregister_window (widget, gtk_widget_get_window(widget));
+      cairo_surface_destroy(priv->surface);
 
       if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy != NULL)
       {
