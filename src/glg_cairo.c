@@ -231,9 +231,6 @@
 #define GLG_MAX_STRING  256      /* Size of a text string */
 #define GLG_MAX_BUFFER  512      /* Size of a text buffer or local string */
 
-#define GLG_USER_MODEL_X 540
-#define GLG_USER_MODEL_Y 260 
-
 #define BORDER_2PAD 	2
 #define BORDER_4PAD 	4
 
@@ -648,6 +645,8 @@ static void glg_line_graph_realize (GtkWidget *widget)
     }
   else
     {
+      priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+
       gtk_widget_set_realized (widget, TRUE);
 
       gtk_widget_get_allocation (widget, &allocation);
@@ -673,10 +672,12 @@ static void glg_line_graph_realize (GtkWidget *widget)
       gtk_widget_set_window (widget, window);
       gdk_window_set_user_data (window, GTK_WIDGET(widget));
 
-      priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
 
       priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (widget) );
       priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
+
+      glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), &allocation);
+
 
     }
 
@@ -726,8 +727,6 @@ static void glg_line_graph_send_configure (GlgLineGraph *graph)
 
   widget = GTK_WIDGET (graph);
   gtk_widget_get_allocation (widget, &allocation);
-
-  glg_line_graph_compute_layout(graph, &allocation);
 
   event->configure.window = g_object_ref (gtk_widget_get_window (widget));
   event->configure.send_event = TRUE;
@@ -789,7 +788,6 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     yfactor = MIN (priv->y_range.i_num_minor, priv->y_range.i_num_major);
     chart_set_ranges = MIN (xfactor, yfactor);
     g_return_val_if_fail (chart_set_ranges != 0, FALSE);
-
 
     if (glg_flag_debug) { 
         g_debug ("===> glg_line_graph_compute_layout(new width=%d, height=%d)", allocation->width, allocation->height);
@@ -952,6 +950,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 {
 	GlgLineGraphPrivate *priv;
     GlgLineGraph   *graph = GLG_LINE_GRAPH(widget);
+    GtkAllocation allocation;
 	cairo_t *cr;
     cairo_status_t status;
     gint width = 0, height = 0;
@@ -966,6 +965,14 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 	g_return_val_if_fail ( priv != NULL, FALSE);
+
+	/*
+	 *  Compute the graph boxes sizing */
+     allocation.x = event->x;
+     allocation.y = event->y;
+     allocation.width = event->width;
+     allocation.height = event->height;
+    glg_line_graph_compute_layout(graph, &allocation);
 
     /*
      * Create an Image Source for off-line drawing */
@@ -986,14 +993,11 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 			height = GLG_USER_MODEL_Y;
 	}
 
-//#define             CAIRO_HAS_QUARTZ_SURFACE
-//    priv->surface = cairo_quartz_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: OSX Specific -- did not work */
+//	priv->surface = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: This worked very well on some gtk3 versions: also CAIRO_FORMAT_RGB24 */
 
-	priv->surface = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: This worked very well: also CAIRO_FORMAT_RGB24 */
-
-//    priv->surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget), /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
-//                                                   CAIRO_CONTENT_COLOR,
-//    											   width, height);
+    priv->surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget), /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
+                                                   CAIRO_CONTENT_COLOR_ALPHA,
+    											       width, height);
 	status = cairo_surface_status(priv->surface);
 	if (status != CAIRO_STATUS_SUCCESS) {
 		g_message ("GLG-Configure-Event:#cairo_image_surface_create:status %d=%s", status, cairo_status_to_string(status) );
@@ -1005,12 +1009,6 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 
 	    glg_line_graph_draw_graph (GTK_WIDGET(widget));
 	}
-
-
-//    if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event != NULL)
-//    {
-//      rc = (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->configure_event) (widget, event);
-//    }
 
     if (glg_flag_debug) {
         g_debug ("===> glg_line_graph_configure_event(exited)");

@@ -31,6 +31,9 @@
 G_BEGIN_DECLS
 
 
+#define GLG_USER_MODEL_X 570     /* Minimum width */
+#define GLG_USER_MODEL_Y 270     /* Minimum height */
+
 typedef struct _GlgLineGraph  GlgLineGraph;
 typedef struct _GlgLineGraphClass GlgLineGraphClass;
 
