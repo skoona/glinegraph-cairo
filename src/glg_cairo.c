@@ -427,7 +427,7 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
     widget_class->size_allocate         = glg_line_graph_size_allocate;
     widget_class->destroy               = glg_line_graph_destroy;
 
-    gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_DRAWING_AREA);
+//    gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_INVALID); // desired ATK_ROLE_DRAWING_AREA);
 
 	/**
 	 * GlgLineGraph::point-selected:
@@ -621,7 +621,7 @@ static void glg_line_graph_realize (GtkWidget *widget)
     }
   else
     {
-      priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+      priv = GLG_LINE_GRAPH(widget)->priv;
 
       gtk_widget_set_realized (widget, TRUE);
 
@@ -646,13 +646,11 @@ static void glg_line_graph_realize (GtkWidget *widget)
                                &attributes, attributes_mask);
       gtk_widget_register_window (widget, priv->window);
       gtk_widget_set_window (widget, priv->window);
-
-      gtk_style_context_set_background (gtk_widget_get_style_context (widget), priv->window);
 	  
       priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (widget) );
       priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
 
-      glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), &allocation);
+//      glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), &allocation);
     }
 
   glg_line_graph_send_configure (GLG_LINE_GRAPH(widget));
@@ -676,7 +674,6 @@ static void glg_line_graph_size_allocate (GtkWidget *widget, GtkAllocation *allo
                                 allocation->x, allocation->y,
                                 allocation->width, allocation->height);
  	  }
-
       glg_line_graph_send_configure (GLG_LINE_GRAPH(widget));
     }
 
@@ -742,7 +739,7 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
 
     g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    priv = graph->priv;
     g_return_val_if_fail ( priv != NULL, FALSE);
 
     /*
@@ -914,7 +911,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 	g_return_val_if_fail ( event->type == GDK_CONFIGURE, FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 	g_return_val_if_fail ( priv != NULL, FALSE);
 
 	/*
@@ -984,7 +981,7 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 	
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = GLG_LINE_GRAPH(graph)->priv;
 	g_return_val_if_fail ( priv != NULL, FALSE);	
 
 	gtk_widget_get_allocation(widget, &allocation);
@@ -1094,7 +1091,7 @@ extern void glg_line_graph_chart_set_x_ranges (GlgLineGraph *graph,
 
     g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    priv = graph->priv;
 
     xfactor = MIN( x_tick_minor, x_tick_major );
     g_return_if_fail ( xfactor != 0);           /* test for contextually vaild input */
@@ -1136,7 +1133,7 @@ extern void glg_line_graph_chart_set_y_ranges (GlgLineGraph *graph,
 
     g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    priv = graph->priv;
 
     yfactor = MIN( y_tick_minor, y_tick_major );
     g_return_if_fail ( yfactor != 0); /* test for contextually vaild input */
@@ -1185,7 +1182,7 @@ extern void glg_line_graph_chart_set_ranges (GlgLineGraph *graph,
 
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 	
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 	
 	xfactor = MIN( x_tick_minor, x_tick_major );
 	yfactor = MIN( y_tick_minor, y_tick_major );
@@ -1242,7 +1239,7 @@ extern gboolean glg_line_graph_chart_set_color (GlgLineGraph *graph, GLGElementI
 	g_return_val_if_fail (GLG_IS_LINE_GRAPH(graph), FALSE);
     g_return_val_if_fail (pch_color != NULL, FALSE);        
 	
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
 
     switch ( element ) {
@@ -1297,7 +1294,7 @@ extern gboolean glg_line_graph_chart_set_text (GlgLineGraph *graph, GLGElementID
 	g_return_val_if_fail (GLG_IS_LINE_GRAPH(graph), FALSE);
     g_return_val_if_fail (pch_text != NULL, FALSE);        
 	
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
     pch = g_strdup (pch_text);
     
@@ -1345,7 +1342,7 @@ static void glg_line_graph_draw_graph (GtkWidget *graph)
 
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = GLG_LINE_GRAPH(graph)->priv;
 
     /* Paint to the surface, where we store our state */
 	  priv->cr = cairo_create (priv->surface);
@@ -1434,7 +1431,7 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
     g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);    
     if (pch_text == NULL ) { return -1; }    
     g_return_val_if_fail (rect != NULL, -1);
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);	
+    priv = graph->priv;
     g_return_val_if_fail (priv->cr != NULL, -1);
 
 
@@ -1554,7 +1551,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
 
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
    	cairo_set_source_rgba (priv->cr, (gdouble)priv->window_color.red,
     								 (gdouble)priv->window_color.green,
@@ -1648,7 +1645,7 @@ static void glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph)
     g_debug ("===> glg_line_graph_draw_x_grid_labels()");
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
     
     g_snprintf (ch_grid_label, GLG_MAX_BUFFER, "<span font_desc=\"Monospace 8\">%d</span>",
                 priv->x_range.i_max_scale);
@@ -1734,7 +1731,7 @@ static void glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph)
 
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
     
     g_snprintf (ch_grid_label, GLG_MAX_BUFFER, "<span font_desc=\"Monospace 8\">%d</span>",
                 priv->y_range.i_max_scale);
@@ -1796,7 +1793,7 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
 	
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
     if (!priv->b_tooltip_active)
     {
@@ -1964,7 +1961,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
     g_return_val_if_fail (psd != NULL, -1);
     g_return_val_if_fail (psd->point_pos != NULL, -1);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
 	if (priv->cr == NULL) {  /* available during expose only */
 		return 1;
@@ -2043,7 +2040,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
 	
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
     
 
     data_sets = g_list_first (priv->lg_series);
@@ -2089,8 +2086,9 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
     g_debug ("===> glg_line_graph_data_series_add_value()");
 
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
+	g_return_val_if_fail (gtk_widget_get_realized (GTK_WIDGET(graph)), FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
     
     data_sets = g_list_first (priv->lg_series);  /* Find specified series */
     while (data_sets)
@@ -2168,7 +2166,7 @@ static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph)
     g_debug ("===> glg_line_graph_data_series_remove_all()");
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
     
     data_sets = g_list_first (priv->lg_series);
     while (data_sets)
@@ -2214,7 +2212,7 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
     g_return_val_if_fail (pch_legend_text != NULL, -1);
     g_return_val_if_fail (pch_color_text != NULL, -1);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+	priv = graph->priv;
 
     psd = (PGLG_SERIES) g_new0 (GLG_SERIES, 1);
     g_return_val_if_fail (psd != NULL, -1);
@@ -2254,7 +2252,7 @@ static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventB
 {
     GlgLineGraphPrivate *priv;
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+	priv = GLG_LINE_GRAPH(widget)->priv;
 
 	if ( !(((ev->x >= priv->plot_box.x) &&      // filter out moves not inside plot box
 		    (ev->y >= priv->plot_box.y)) &&
@@ -2294,7 +2292,7 @@ static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEvent
   GdkModifierType state;
   gint        x = 0, y = 0;
 
-  priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+  priv = GLG_LINE_GRAPH(widget)->priv;
 
 	if ( !(((ev->x >= priv->plot_box.x) &&      // filter out moves not inside plot box
 		    (ev->y >= priv->plot_box.y)) &&
@@ -2431,7 +2429,7 @@ static void glg_line_graph_set_property (GObject *object, guint prop_id, const G
   graph = GLG_LINE_GRAPH (object);
   g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-  priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+  priv = graph->priv;
   g_return_if_fail ( priv != NULL);
   
   switch (prop_id)
@@ -2530,7 +2528,7 @@ static void glg_line_graph_get_property (GObject *object, guint prop_id, GValue 
   graph = GLG_LINE_GRAPH (object);
   g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-  priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+  priv = graph->priv;
   g_return_if_fail ( priv != NULL);
   
   switch (prop_id)

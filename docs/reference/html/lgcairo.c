@@ -94,7 +94,8 @@ int main (int argc, char **argv)
 	/*
 	 * Create Graph -- Alternate Init Method
 	 * and set all its options in one call */
-	glg = glg_line_graph_new ("chart-set-elements", GLG_TOOLTIP | GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y | GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y | GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y | GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
+	glg = g_object_new (GLG_TYPE_LINE_GRAPH,
+			"chart-set-elements", GLG_TOOLTIP | GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y | GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y | GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y | GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
 			"range-tick-minor-x", 1,
 			"range-tick-major-x", 10,
 			"range-scale-minor-x", 0,
