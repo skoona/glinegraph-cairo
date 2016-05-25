@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 
 typedef struct _GlgLineGraph  GlgLineGraph;
 typedef struct _GlgLineGraphClass GlgLineGraphClass;
+typedef struct _GlgLineGraphPrivate GlgLineGraphPrivate;
 
 
 /**
@@ -71,6 +72,7 @@ struct _GlgLineGraph
 	GtkWidget parent;
 
 	/* < private > */
+	GlgLineGraphPrivate *priv;
 };
 
 
@@ -159,7 +161,7 @@ typedef enum _GLG_Graph_Elements {
 /* 
  * Public Interfaces 
 */
-extern GlgLineGraph *  glg_line_graph_new (void);
+extern GlgLineGraph * glg_line_graph_new (const gchar *first_property_name, ...);
 extern GType    glg_line_graph_get_type (void) G_GNUC_CONST;
 extern void 		glg_line_graph_redraw (GlgLineGraph *graph);
 extern GLGElementID glg_line_graph_chart_get_elements ( GlgLineGraph *graph);

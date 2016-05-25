@@ -162,7 +162,8 @@ GlgLineGraph
 
 </para>
 
-@void: 
+@first_property_name: 
+@...: 
 @Returns: 
 
 
