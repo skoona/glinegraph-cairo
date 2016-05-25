@@ -882,10 +882,8 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     yfactor -= priv->plot_box.height;
     priv->plot_box.x += (gint)(xfactor * 0.80);
     priv->plot_box.y += yfactor;    
-    priv->tooltip_box.x = priv->page_title_box.x = priv->plot_box.x;
-    priv->x_label_box.x = priv->plot_box.x;
-    priv->page_title_box.width = priv->plot_box.width;
-    priv->tooltip_box.width = priv->x_label_box.width = priv->plot_box.width;
+    priv->tooltip_box.x = priv->page_title_box.x = priv->x_label_box.x = priv->plot_box.x;
+    priv->tooltip_box.width = priv->x_label_box.width = priv->page_title_box.width = priv->plot_box.width;
     priv->y_label_box.y = priv->plot_box.y + priv->plot_box.height;
 
     /*  
