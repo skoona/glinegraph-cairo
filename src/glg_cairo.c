@@ -77,9 +77,8 @@
  *  GlgLineGraph *glg = NULL;
  *  gint  i_series_0 = 0, i_series_1 = 0;
  *  ...
- *  glg = (GlgLineGraph *) glg_line_graph_new();
- *
- *  g_object_set (glg,  "range-tick-minor-x", 1,
+ *  glg = glg_line_graph_new(
+ *                      "range-tick-minor-x", 1,
  *   					"range-tick-major-x", 2,
  *   					"range-scale-minor-x", 0,
  *   					"range-scale-major-x", 40,
@@ -87,31 +86,23 @@
  *   					"range-tick-major-y", 10,
  *   					"range-scale-minor-y", 0,
  *   					"range-scale-major-y", 100,
- *   					NULL);
- *
- *  g_object_set (glg, "chart-set-elements", GLG_TOOLTIP | 
+ *   					"chart-set-elements", GLG_TOOLTIP | 
  *						GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y |
  *                	 	GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |                                     
  *                	 	GLG_GRID_LINES | GLG_GRID_MINOR_X | GLG_GRID_MAJOR_X |
  *                    	GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y, 
- *                    			      NULL); 
- *
- *  g_object_set (glg, "series-line-width", 3, NULL);
- *
- *  g_object_set (glg,  "graph-title-foreground",  "blue",
+ *                    	"series-line-width", 3, 
+ *                      "graph-title-foreground",  "blue",
  *   					"graph-scale-foreground",  "red",
  *    					"graph-chart-background",  "light blue",
  *    					"graph-window-background", "white", 
- *    					NULL);
- *
- *  g_object_set (glg,  "text-title-main", "This Top Title Line ",        				
+ *    					"text-title-main", "This Top Title Line ",        				
  *                      "text-title-yaxis", "This is the Y axis title line.",
  *         				"text-title-xaxis", "This is the X axis title line.",
  *   			        NULL);
  *
  *  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
  *  gtk_widget_show_all (window);
- * 
  *
  *  i_series_0 = glg_line_graph_data_series_add (glg, "Volts", "red");
  *  i_series_1 = glg_line_graph_data_series_add (glg, "Battery", "blue");
@@ -138,7 +129,7 @@
  * GlgLineGraph *glg = NULL;
  * gint  i_series_0 = 0, i_series_1 = 0;
  * ...
- * glg = (GlgLineGraph *) glg_line_graph_new();
+ * glg = (GlgLineGraph *) glg_line_graph_new(NULL);
  *
  * glg_line_graph_chart_set_x_ranges (glg, 1, 2,0, 40);
  * glg_line_graph_chart_set_y_ranges (glg, 5,10,0,100);
@@ -150,16 +141,16 @@
  *                   	GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y 
  *                   			     ); 
  *
- * glg_line_graph_chart_set_color (graph, GLG_TITLE,  "blue");
- * glg_line_graph_chart_set_color (graph, GLG_SCALE,  "read");
- * glg_line_graph_chart_set_color (graph, GLG_CHART,  "light blue");
- * glg_line_graph_chart_set_color (graph, GLG_WINDOW, "white");	
- *
  * glg_line_graph_chart_set_text (glg, GLG_TITLE_T, "This Top Title Line " );	
  *        				
  * glg_line_graph_chart_set_text (glg, GLG_TITLE_Y, "This is the y label." ); 	
  *        					 
  * glg_line_graph_chart_set_text (glg, GLG_TITLE_X, "This is the x label" );
+ *
+ * glg_line_graph_chart_set_color (graph, GLG_TITLE,  "blue");
+ * glg_line_graph_chart_set_color (graph, GLG_SCALE,  "read");
+ * glg_line_graph_chart_set_color (graph, GLG_CHART,  "light blue");
+ * glg_line_graph_chart_set_color (graph, GLG_WINDOW, "white");	
  * 
  * gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
  * gtk_widget_show_all (window);
@@ -270,10 +261,10 @@ typedef struct _GLG_RANGES {
 /* 
  * widget private data structure 
 */
-typedef struct _GlgLineGraphPrivate GlgLineGraphPrivate;
 struct _GlgLineGraphPrivate
 {
     gint        cb_id;			  /* structure id */	
+	GdkWindow   *window;
     GLGElementID lgflags;         /* things to be drawn */
     /* new cairo design */
     cairo_surface_t *surface;
@@ -403,12 +394,6 @@ static void _glg_cairo_marshal_VOID__DOUBLE_DOUBLE_DOUBLE_DOUBLE (GClosure     *
                                                       gpointer      invocation_hint,
                                                       gpointer      marshal_data);
 
-
-/*
- * Global diagnostics varible
-*/
-static gboolean glg_flag_debug;
-
 enum
 {
 	POINT_SELECTED_SIGNAL,
@@ -427,11 +412,7 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 
     gint			elements = GLG_GRID_LINES;      
 
-    glg_flag_debug = TRUE;
-
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_class_init()");
-	}
+    g_debug ("===> glg_line_graph_class_init(entered)");
 
     /* GObject signal overrides */
     obj_class->set_property = glg_line_graph_set_property;
@@ -440,11 +421,13 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 	/* GtkWidget signals overrides */
     widget_class->realize               = glg_line_graph_realize;
 	widget_class->configure_event 	    = glg_line_graph_configure_event;
-	widget_class->draw      			    = glg_line_graph_master_draw;
+	widget_class->draw      			= glg_line_graph_master_draw;
 	widget_class->motion_notify_event   = glg_line_graph_motion_notify_event;
   	widget_class->button_press_event    = glg_line_graph_button_press_event;
     widget_class->size_allocate         = glg_line_graph_size_allocate;
     widget_class->destroy               = glg_line_graph_destroy;
+
+    gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_DRAWING_AREA);
 
 	/**
 	 * GlgLineGraph::point-selected:
@@ -457,7 +440,7 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 	 * The ::point-selected signal is emitted after the toggle-on mouse1 click, and sends
 	 * values closest to the mouse pointer.  
 	 */
-  glg_line_graph_signals[POINT_SELECTED_SIGNAL] = g_signal_new (
+     glg_line_graph_signals[POINT_SELECTED_SIGNAL] = g_signal_new (
 			"point-selected",
 			G_OBJECT_CLASS_TYPE (obj_class),
 			G_SIGNAL_RUN_FIRST,
@@ -471,35 +454,35 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
 			G_TYPE_DOUBLE);
 
 
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_TITLE,
                                    g_param_spec_string ("text-title-main",
                                                         "Graph Top Title",
                                                         "Title at top of graph on the X axis",
                                                         "<big><b>Top Title</b></big>",
                                                         G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_TITLE_X,
                                    g_param_spec_string ("text-title-xaxis",
                                                         "Graph x axis title",
                                                         "Title at bottom of graph on the X axis",
                                                         "<i>X Axis Title</i>",
                                                         G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_TITLE_Y,
                                    g_param_spec_string ("text-title-yaxis",
                                                         "Graph y axis title",
                                                         "Title on left of graph on the Y axis",
                                                         "Y Axis Title",
                                                         G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_LINE_WIDTH,
                                    g_param_spec_int  ("series-line-width",
                                                       "Series line width",
                                                       "Width of line drawn for data series",
                                                        1,10,2,             
                                                        G_PARAM_READWRITE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_ELEMENTS,
                                    g_param_spec_int  ("chart-set-elements",
                                                       "Show Chart Elements",
@@ -507,21 +490,21 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
                                                        0, GLG_RESERVED_ON, elements,             
                                                        G_PARAM_WRITABLE));  
         
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_TITLE_COLOR,
                                    g_param_spec_string ("graph-title-foreground",
                                                         "Color name",
                                                         "Main title foreground color",
                                                         "blue",
                                                         G_PARAM_WRITABLE));          
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_SCALE_COLOR,
                                    g_param_spec_string ("graph-scale-foreground",
                                                         "Color name",
                                                         "X and Y chart scale foreground font color",
                                                         "black",
                                                         G_PARAM_WRITABLE));          
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
                                    PROP_GRAPH_CHART_COLOR,
                                    g_param_spec_string ("graph-chart-background",
                                                         "Color name",
@@ -536,56 +519,56 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
                                                         "white",
                                                         G_PARAM_WRITABLE));  
 /* *** */
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_TICK_MINOR_X,
                                    g_param_spec_int  ("range-tick-minor-x",
                                                       "x minor tick increment",
                                                       "x minor ticks on scale",
                                                        1, 100, 5,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_TICK_MAJOR_X,
                                    g_param_spec_int  ("range-tick-major-x",
                                                       "x major tick increment",
                                                       "x major ticks on scale",
                                                        1, 1000, 10,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_SCALE_MINOR_X,
                                    g_param_spec_int  ("range-scale-minor-x",
                                                       "x minor scale range",
                                                       "x minor scale range",
                                                        0, 100, 0,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
 								   PROP_SCALE_MAJOR_X,
                                    g_param_spec_int  ("range-scale-major-x",
                                                       "x major scale range",
                                                       "x major scale range",
                                                        1, 1000, 100,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_TICK_MINOR_Y,
                                    g_param_spec_int  ("range-tick-minor-y",
                                                       "Y minor tick increment",
                                                       "Y minor ticks on scale",
                                                        1, 100, 5,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_TICK_MAJOR_Y,
                                    g_param_spec_int  ("range-tick-major-y",
                                                       "Y major tick increment",
                                                       "Y major ticks on scale",
                                                        1, 1000, 10,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
   									PROP_SCALE_MINOR_Y,
                                    g_param_spec_int  ("range-scale-minor-y",
                                                       "Y minor scale range",
                                                       "Y minor scale range",
                                                        0, 100, 0,             
                                                        G_PARAM_WRITABLE));  
-  g_object_class_install_property (obj_class,
+    g_object_class_install_property (obj_class,
 								   PROP_SCALE_MAJOR_Y,
                                    g_param_spec_int  ("range-scale-major-y",
                                                       "Y major scale range",
@@ -593,6 +576,7 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
                                                        1, 1000, 100,             
                                                        G_PARAM_WRITABLE));  
 		
+    g_debug ("===> glg_line_graph_class_init(exited)");
 	return;
 }
 
@@ -600,14 +584,11 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 {
 	GlgLineGraphPrivate *priv = NULL;
 		
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_init(entered)");
-	}
+	g_debug ("===> glg_line_graph_init(entered)");
+
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
-	
-	glg_flag_debug = TRUE;
+    graph->priv = priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 
 	gtk_widget_set_has_window (GTK_WIDGET(graph), TRUE);
 	gtk_widget_set_app_paintable (GTK_WIDGET(graph), TRUE);
@@ -619,9 +600,7 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 		priv->series_line_width = 2;
 	}
 
-	if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_init(exited)");
-    }
+    g_debug ("===> glg_line_graph_init(exited)");
 	    
 	return;
 }
@@ -630,14 +609,11 @@ static void glg_line_graph_init (GlgLineGraph *graph)
 static void glg_line_graph_realize (GtkWidget *widget)
 {
   GtkAllocation allocation;
-  GdkWindow *window;
   GdkWindowAttr attributes;
   gint attributes_mask;
   GlgLineGraphPrivate *priv = NULL;
 
-  if (glg_flag_debug) {
-      g_debug ("===> glg_line_graph_realize(entered)");
-  }
+  g_debug ("===> glg_line_graph_realize(entered)");
 
   if (!gtk_widget_get_has_window (widget))
     {
@@ -666,33 +642,27 @@ static void glg_line_graph_realize (GtkWidget *widget)
 
       attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
-      window = gdk_window_new (gtk_widget_get_parent_window (widget),
+      priv->window = gdk_window_new (gtk_widget_get_parent_window (widget),
                                &attributes, attributes_mask);
-      gtk_widget_register_window (widget, window);
-      gtk_widget_set_window (widget, window);
-      gdk_window_set_user_data (window, GTK_WIDGET(widget));
+      gtk_widget_register_window (widget, priv->window);
+      gtk_widget_set_window (widget, priv->window);
 
-
+      gtk_style_context_set_background (gtk_widget_get_style_context (widget), priv->window);
+	  
       priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (widget) );
       priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
 
       glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), &allocation);
-
-
     }
 
   glg_line_graph_send_configure (GLG_LINE_GRAPH(widget));
 
-  if (glg_flag_debug) {
-      g_debug ("===> glg_line_graph_realize(exited)");
-  }
+  g_debug ("===> glg_line_graph_realize(exited)");
 }
 
 static void glg_line_graph_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_size_allocate(entered)");
-    }
+  g_debug ("===> glg_line_graph_size_allocate(entered)");
 
   g_return_if_fail (GLG_IS_LINE_GRAPH(widget));
   g_return_if_fail (allocation != NULL);
@@ -701,18 +671,16 @@ static void glg_line_graph_size_allocate (GtkWidget *widget, GtkAllocation *allo
 
   if (gtk_widget_get_realized (widget))
     {
-      if (gtk_widget_get_has_window (widget))
+      if (gtk_widget_get_has_window (widget)) {
         gdk_window_move_resize (gtk_widget_get_window (widget),
                                 allocation->x, allocation->y,
                                 allocation->width, allocation->height);
+ 	  }
 
       glg_line_graph_send_configure (GLG_LINE_GRAPH(widget));
     }
 
-  if (glg_flag_debug) {
-      g_debug ("===> glg_line_graph_size_allocate(exited)");
-  }
-
+    g_debug ("===> glg_line_graph_size_allocate(exited)");
 }
 
 static void glg_line_graph_send_configure (GlgLineGraph *graph)
@@ -721,14 +689,12 @@ static void glg_line_graph_send_configure (GlgLineGraph *graph)
   GtkWidget *widget;
   GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
 
-  if (glg_flag_debug) {
-      g_debug ("===> glg_line_graph_send_configure(entered)");
-  }
+  g_debug ("===> glg_line_graph_send_configure(entered)");
 
   widget = GTK_WIDGET (graph);
   gtk_widget_get_allocation (widget, &allocation);
 
-  event->configure.window = g_object_ref (gtk_widget_get_window (widget));
+  event->configure.window = g_object_ref (graph->priv->window);
   event->configure.send_event = TRUE;
   event->configure.x = allocation.x;
   event->configure.y = allocation.y;
@@ -738,9 +704,7 @@ static void glg_line_graph_send_configure (GlgLineGraph *graph)
   gtk_widget_event (widget, event);
   gdk_event_free (event);
 
-  if (glg_flag_debug) {
-      g_debug ("===> glg_line_graph_send_configure(exited)");
-  }
+  g_debug ("===> glg_line_graph_send_configure(exited)");
 
 }
 
@@ -774,9 +738,8 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     PangoLayout *layout;
     gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
 
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_compute_layout(entered)");
-    }
+    g_debug ("===> glg_line_graph_compute_layout(entered)");
+
     g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
     priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -789,9 +752,7 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     chart_set_ranges = MIN (xfactor, yfactor);
     g_return_val_if_fail (chart_set_ranges != 0, FALSE);
 
-    if (glg_flag_debug) { 
-        g_debug ("===> glg_line_graph_compute_layout(new width=%d, height=%d)", allocation->width, allocation->height);
-    } 
+    g_debug ("===> glg_line_graph_compute_layout(new width=%d, height=%d)", allocation->width, allocation->height);
 
     /*
      * Compute scale: use managed or our desired user space values
@@ -813,14 +774,12 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
         pango_layout_set_markup (layout, "<b>M</b>", -1);
         pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
         pango_layout_get_pixel_size (layout, &xfactor, &yfactor);
-        if (glg_flag_debug) {
-            g_debug ("Alloc:factors:raw:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
-        }
+        g_debug ("Alloc:factors:raw:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
+
         priv->xfactor = xfactor = ((xfactor+6)/10) * 10;
         priv->yfactor = yfactor = ((yfactor+8)/10) * 10;
-        if (glg_flag_debug) {
-            g_debug ("Alloc:factors:adj:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
-        }
+        g_debug ("Alloc:factors:adj:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
+
     g_object_unref (layout);
 
     /*
@@ -857,14 +816,12 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
      * This is for the main chart area or plot box 
      * -- this calc is for the maximum available area 
      */
-    priv->plot_box.x = priv->y_label_box.width + priv->y_label_box.x + (xfactor * 2) + priv->x_border;
+    priv->plot_box.x = priv->y_label_box.width + priv->y_label_box.x + (xfactor * 3);
     priv->plot_box.y = priv->page_title_box.height + priv->page_title_box.y + priv->y_border;
     priv->plot_box.width  = (gint) priv->page_box.width - priv->plot_box.x - xfactor;
     priv->plot_box.height = (gint) priv->page_box.height - priv->plot_box.y  - priv->x_label_box.height - yfactor;
    
-    if (glg_flag_debug) {
-        g_debug ("Alloc:Max.Avail: plot_box.width=%d, plot_box.height=%d", priv->plot_box.width, priv->plot_box.height);
-    }
+    g_debug ("Alloc:Max.Avail: plot_box.width=%d, plot_box.height=%d", priv->plot_box.width, priv->plot_box.height);
 
     /* 
      * reposition the box according to scale-able increments 
@@ -894,52 +851,50 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
     priv->x_range.i_minor_inc = priv->plot_box.width / priv->x_range.i_num_minor;
     priv->x_range.i_major_inc = priv->plot_box.width / priv->x_range.i_num_major;
 
-    if (glg_flag_debug) {
-        g_debug ("Alloc:Chart:Incs:    x_minor=%d, x_major=%d, y_minor=%d, y_major=%d, plot_box.x=%d, plot_box.y=%d, plot_box.width=%d, plot_box.height=%d",
-              priv->x_range.i_minor_inc,
-              priv->x_range.i_major_inc,
-              priv->y_range.i_minor_inc,
-              priv->y_range.i_major_inc,
-              priv->plot_box.x,
-              priv->plot_box.y,
-              priv->plot_box.width,
-              priv->plot_box.height);
+    g_debug ("Alloc:Chart:Incs:    x_minor=%d, x_major=%d, y_minor=%d, y_major=%d, plot_box.x=%d, plot_box.y=%d, plot_box.width=%d, plot_box.height=%d",
+          priv->x_range.i_minor_inc,
+          priv->x_range.i_major_inc,
+          priv->y_range.i_minor_inc,
+          priv->y_range.i_major_inc,
+          priv->plot_box.x,
+          priv->plot_box.y,
+          priv->plot_box.width,
+          priv->plot_box.height);
 
-        g_debug ("Alloc:Chart:Nums:    x_num_minor=%d, x_num_major=%d, y_num_minor=%d, y_num_major=%d",
-              priv->x_range.i_num_minor,
-              priv->x_range.i_num_major,
-              priv->y_range.i_num_minor,
-              priv->y_range.i_num_major);
+    g_debug ("Alloc:Chart:Nums:    x_num_minor=%d, x_num_major=%d, y_num_minor=%d, y_num_major=%d",
+          priv->x_range.i_num_minor,
+          priv->x_range.i_num_major,
+          priv->y_range.i_num_minor,
+          priv->y_range.i_num_major);
 
-        g_debug ("Alloc:Chart:Plot:    x=%d, y=%d, width=%d, height=%d",
-                priv->plot_box.x,
-                priv->plot_box.y,
-                priv->plot_box.width,
-                priv->plot_box.height);
+    g_debug ("Alloc:Chart:Plot:    x=%d, y=%d, width=%d, height=%d",
+            priv->plot_box.x,
+            priv->plot_box.y,
+            priv->plot_box.width,
+            priv->plot_box.height);
 
-        g_debug ("Alloc:Chart:Title:   x=%d, y=%d, width=%d, height=%d",
-                priv->page_title_box.x,
-                priv->page_title_box.y,
-                priv->page_title_box.width,
-                priv->page_title_box.height);
-        g_debug ("Alloc:Chart:yLabel:  x=%d, y=%d, width=%d, height=%d",
-                priv->y_label_box.x,
-                priv->y_label_box.y,
-                priv->y_label_box.width,
-                priv->y_label_box.height);
-        g_debug ("Alloc:Chart:xLabel:  x=%d, y=%d, width=%d, height=%d",
-                priv->x_label_box.x,
-                priv->x_label_box.y,
-                priv->x_label_box.width,
-                priv->x_label_box.height);
-        g_debug ("Alloc:Chart:Tooltip: x=%d, y=%d, width=%d, height=%d",
-                priv->tooltip_box.x,
-                priv->tooltip_box.y,
-                priv->tooltip_box.width,
-                priv->tooltip_box.height);
+    g_debug ("Alloc:Chart:Title:   x=%d, y=%d, width=%d, height=%d",
+            priv->page_title_box.x,
+            priv->page_title_box.y,
+            priv->page_title_box.width,
+            priv->page_title_box.height);
+    g_debug ("Alloc:Chart:yLabel:  x=%d, y=%d, width=%d, height=%d",
+            priv->y_label_box.x,
+            priv->y_label_box.y,
+            priv->y_label_box.width,
+            priv->y_label_box.height);
+    g_debug ("Alloc:Chart:xLabel:  x=%d, y=%d, width=%d, height=%d",
+            priv->x_label_box.x,
+            priv->x_label_box.y,
+            priv->x_label_box.width,
+            priv->x_label_box.height);
+    g_debug ("Alloc:Chart:Tooltip: x=%d, y=%d, width=%d, height=%d",
+            priv->tooltip_box.x,
+            priv->tooltip_box.y,
+            priv->tooltip_box.width,
+            priv->tooltip_box.height);
 
-        g_debug ("===> glg_line_graph_compute_layout(exited)");
-    }
+    g_debug ("===> glg_line_graph_compute_layout(exited)");
     
     return (TRUE);
 }
@@ -954,9 +909,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
     gint width = 0, height = 0;
 
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_configure_event(entered)");
-	}
+	g_debug ("===> glg_line_graph_configure_event(entered)");
 
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 	g_return_val_if_fail ( event->type == GDK_CONFIGURE, FALSE);
@@ -1008,9 +961,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 	    glg_line_graph_draw_graph (GTK_WIDGET(widget));
 	}
 
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_configure_event(exited)");
-    }
+    g_debug ("===> glg_line_graph_configure_event(exited)");
     
     return (TRUE);
 }
@@ -1029,9 +980,8 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     gint64 start_time = glg_duration_us(NULL, NULL);
 
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_master_draw(entered)");
-	}
+	g_debug ("===> glg_line_graph_master_draw(entered)");
+
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 	
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1040,11 +990,9 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	gtk_widget_get_allocation(widget, &allocation);
 	gdk_cairo_get_clip_rectangle (cr, &dirtyRect);
 
-    if (glg_flag_debug) {
-    	g_debug ("glg_line_graph_master_draw(Allocation ==> width=%d, height=%d,  Dirty Rect ==> x=%d, y=%d, width=%d, height=%d )",
+   	g_debug ("glg_line_graph_master_draw(Allocation ==> width=%d, height=%d,  Dirty Rect ==> x=%d, y=%d, width=%d, height=%d )",
     	                 allocation.width, allocation.height,
     	                 dirtyRect.x, dirtyRect.y, dirtyRect.width, dirtyRect.height);
-    }
 
 	/* 
 	 * test to ensure chart ranges are already set */
@@ -1063,11 +1011,9 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
 	    cairo_scale (cr, (gdouble)allocation.width/GLG_USER_MODEL_X,
 		  		 		 (gdouble)allocation.height/GLG_USER_MODEL_Y);
 		  		 		 
-		if (glg_flag_debug) {
-			g_debug ("glg_line_graph_master_draw#cairo_scale( x=%3.3f, y=%3.3f)",
+		g_debug ("glg_line_graph_master_draw#cairo_scale( x=%3.3f, y=%3.3f)",
 								 (gdouble)allocation.width/GLG_USER_MODEL_X,
 							     (gdouble)allocation.height/GLG_USER_MODEL_Y);
-		}
     }
 
 	/*
@@ -1075,10 +1021,8 @@ static gboolean glg_line_graph_master_draw (GtkWidget *graph, cairo_t *cr)
     cairo_set_source_surface (cr, priv->surface, 0, 0);
     cairo_paint (cr);
 
-    if (glg_flag_debug) {
-    	glg_duration_us(&start_time, "glg_line_graph_master_draw#TOTAL-TIME");
-        g_debug ("glg_line_graph_master_draw(exited)");
-    }
+   	glg_duration_us(&start_time, "glg_line_graph_master_draw#TOTAL-TIME");
+    g_debug ("glg_line_graph_master_draw(exited)");
 
 	return TRUE;
 }
@@ -1093,9 +1037,8 @@ extern void glg_line_graph_redraw (GlgLineGraph *graph)
 {
 	GtkAllocation allocation;
 	
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_redraw(entered)");
-	}
+	g_debug ("===> glg_line_graph_redraw(entered)");
+
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
     /* redraw the window completely by exposing it */
@@ -1103,24 +1046,31 @@ extern void glg_line_graph_redraw (GlgLineGraph *graph)
     	gtk_widget_get_allocation(GTK_WIDGET (graph), &allocation);
     	gtk_widget_queue_draw_area (GTK_WIDGET (graph), allocation.x, allocation.y, allocation.width, allocation.height);
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_redraw(exited)");
-	}
+	g_debug ("===> glg_line_graph_redraw(exited)");
 }
 
 /**
  * glg_line_graph_new:
  *
  * Creates a new line graph widget
- *
+ * - optionally accepts 'property-name, property-values',...,NULL pairs
  * Returns:  a pointer to a #GlgLineGraph widget 
 */
-extern GlgLineGraph * glg_line_graph_new (void)
+extern GlgLineGraph * glg_line_graph_new (const gchar *first_property_name, ...)
 {
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_new()");
-	}
-	return g_object_new (GLG_TYPE_LINE_GRAPH, NULL);
+	GlgLineGraph *graph = NULL;
+    va_list var_args;
+	
+	g_debug ("===> glg_line_graph_new(entered)");
+
+    g_return_val_if_fail (first_property_name != NULL, g_object_new(GLG_TYPE_LINE_GRAPH, NULL));
+
+    va_start (var_args, first_property_name);
+    graph = (GlgLineGraph *)g_object_new_valist (GLG_TYPE_LINE_GRAPH, first_property_name, var_args);
+    va_end (var_args);
+
+	g_debug ("===> glg_line_graph_new(exited)");
+    return graph;		
 }
 
 /**
@@ -1140,9 +1090,8 @@ extern void glg_line_graph_chart_set_x_ranges (GlgLineGraph *graph,
     GlgLineGraphPrivate *priv;
     gint xfactor = 0;
 
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_chart_set_x_ranges()");
-    }
+    g_debug ("===> glg_line_graph_chart_set_x_ranges()");
+
     g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
     priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1183,9 +1132,8 @@ extern void glg_line_graph_chart_set_y_ranges (GlgLineGraph *graph,
     GlgLineGraphPrivate *priv;
     gint yfactor = 0;
 
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_chart_set_y_ranges()");
-    }
+    g_debug ("===> glg_line_graph_chart_set_y_ranges()");
+
     g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
     priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1233,9 +1181,8 @@ extern void glg_line_graph_chart_set_ranges (GlgLineGraph *graph,
 	GlgLineGraphPrivate *priv;
 	gint xfactor = 0, yfactor = 0, chart_set_ranges = 0;
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_chart_set_ranges()");
-	}
+	g_debug ("===> glg_line_graph_chart_set_ranges()");
+
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 	
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1290,11 +1237,10 @@ extern gboolean glg_line_graph_chart_set_color (GlgLineGraph *graph, GLGElementI
     gboolean   rc = TRUE;
 
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_chart_set_color()");
-	}
+	g_debug ("===> glg_line_graph_chart_set_color(entered)");
+
 	g_return_val_if_fail (GLG_IS_LINE_GRAPH(graph), FALSE);
-        g_return_val_if_fail (pch_color != NULL, FALSE);        
+    g_return_val_if_fail (pch_color != NULL, FALSE);        
 	
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
 
@@ -1321,6 +1267,7 @@ extern gboolean glg_line_graph_chart_set_color (GlgLineGraph *graph, GLGElementI
              rc = FALSE;
     }
     
+	g_debug ("===> glg_line_graph_chart_set_color(exited)");
    return rc;
 }
 
@@ -1345,9 +1292,8 @@ extern gboolean glg_line_graph_chart_set_text (GlgLineGraph *graph, GLGElementID
     gchar 	   *pch = NULL;
     gboolean   rc = TRUE;
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_chart_set_text()");
-	}
+	g_debug ("===> glg_line_graph_chart_set_text(entered)");
+
 	g_return_val_if_fail (GLG_IS_LINE_GRAPH(graph), FALSE);
     g_return_val_if_fail (pch_text != NULL, FALSE);        
 	
@@ -1384,6 +1330,7 @@ extern gboolean glg_line_graph_chart_set_text (GlgLineGraph *graph, GLGElementID
              rc = FALSE;
     }
     
+	g_debug ("===> glg_line_graph_chart_set_text(exited)");
   return rc;
 }
 
@@ -1394,9 +1341,8 @@ static void glg_line_graph_draw_graph (GtkWidget *graph)
     gint64 start_time = glg_duration_us(NULL, NULL);
     gint64 duration = glg_duration_us(NULL, NULL);
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_draw_graph(entered)");
-	}
+	g_debug ("===> glg_line_graph_draw_graph(entered)");
+
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1417,10 +1363,8 @@ static void glg_line_graph_draw_graph (GtkWidget *graph)
     cairo_stroke (priv->cr);
     glg_duration_us(&start_time, "glg_line_graph_draw_graph#PlotArea");
 
-		if (glg_flag_debug) {
-			g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
+		g_debug ("Chart.Surface: pg.Width=%d, pg.Height=%d, Plot Area x=%d y=%d width=%d, height=%d",
 			  priv->page_box.width, priv->page_box.height,priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
-		}
 
 		/*
 		 * draw titles
@@ -1467,10 +1411,8 @@ static void glg_line_graph_draw_graph (GtkWidget *graph)
     cairo_destroy (priv->cr);
     priv->cr = NULL;
 
-    if (glg_flag_debug) {
-        g_debug ("===> glg_line_graph_draw_graph(exited)");
-        glg_duration_us(&duration, "glg_line_graph_draw_graph#TOTAL-TIME");
-    }
+    g_debug ("===> glg_line_graph_draw_graph(exited)");
+    glg_duration_us(&duration, "glg_line_graph_draw_graph#TOTAL-TIME");
 	
 	return;	
 }
@@ -1487,9 +1429,7 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
     PangoLayout *layout = NULL;
     gint        x_pos = 0, y_pos = 0, width = 0, height = 0;
 
-    if (glg_flag_debug) {
 	g_debug ("===> glg_line_graph_draw_text_horizontal()");
-    }
 
     g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);    
     if (pch_text == NULL ) { return -1; }    
@@ -1518,14 +1458,12 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
 	    y_pos = rect->y + (gint)((rect->height - height) * 0.80);
 	}
 
-    if (glg_flag_debug) {	
-		g_debug ("Horiz.TextBox:Page cx=%d, cy=%d", 
+	g_debug ("Horiz.TextBox:Page cx=%d, cy=%d", 
 				  priv->page_box.width, priv->page_box.height);
-		g_debug ("Horiz.TextBox:Orig: x=%d, y=%d, cx=%d, cy=%d", 
+	g_debug ("Horiz.TextBox:Orig: x=%d, y=%d, cx=%d, cy=%d", 
 				  rect->x, rect->y, rect->width, rect->height);
-		g_debug ("Horiz.TextBox:Calc x_pos=%d, y_pos=%d,  cx=%d, cy=%d", 
+	g_debug ("Horiz.TextBox:Calc x_pos=%d, y_pos=%d,  cx=%d, cy=%d", 
 				  x_pos, y_pos, width, height);
-    }
 
 	/* title_gc */	
     cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
@@ -1550,14 +1488,13 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
     PangoLayout *layout = NULL;
     gint        y_pos = 0;
 
-    if (glg_flag_debug) {
 	g_debug ("===> glg_line_graph_draw_text_vertical()");
-    }
+
     g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
     if (pch_text == NULL) { return 1; }
     g_return_val_if_fail (rect != NULL, -1);
 
-    priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
+    priv = graph->priv;
 
 	cairo_save (priv->cr);
 
@@ -1574,10 +1511,8 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 			y_pos = priv->page_box.height - ((priv->page_box.height - rect->width) / 2);
 		}
 
-		if (glg_flag_debug) {
-			g_debug ("Vert:TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
+		g_debug ("Vert:TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
 						y_pos, rect->x, rect->y, rect->width, rect->height);
-		}
 
 		/* title_gc */
 		cairo_set_source_rgb (priv->cr, (gdouble)priv->title_color.red,
@@ -1594,10 +1529,8 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 
   	cairo_restore (priv->cr);
 
-	if (glg_flag_debug) {
-		g_debug ("Vert.TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
+	g_debug ("Vert.TextBox: y_pos=%d,  x=%d, y=%d, cx=%d, cy=%d",
 				  y_pos, rect->x, rect->y, rect->width, rect->height);
-	}
 
     return rect->height;
 }
@@ -1617,9 +1550,8 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     gint        count_major = 0, count_minor = 0;
 
 
-	if (glg_flag_debug) {
-		g_debug ("===> glg_line_graph_draw_grid_lines()");
-	}
+    g_debug ("===> glg_line_graph_draw_grid_lines()");
+
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1633,11 +1565,9 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     y_minor_inc = priv->y_range.i_minor_inc;
     y_major_inc = priv->y_range.i_major_inc;
 
-	if (glg_flag_debug) {
-		g_debug
+	g_debug
             ("Draw.Y-GridLines: count_major=%d, count_minor=%d, y_minor_inc=%d, y_major_inc=%d",
              count_major, count_minor, y_minor_inc, y_major_inc);
-    }
 
     x_pos = priv->plot_box.width;
     y_pos = priv->plot_box.y;    
@@ -1671,11 +1601,8 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
     x_minor_inc = priv->x_range.i_minor_inc;
     x_major_inc = priv->x_range.i_major_inc;
 
-    if (glg_flag_debug) {
-        g_debug
-            ("Draw.X-GridLines: count_major=%d, count_minor=%d, x_minor_inc=%d, x_major_inc=%d",
+    g_debug ("Draw.X-GridLines: count_major=%d, count_minor=%d, x_minor_inc=%d, x_major_inc=%d",
              count_major, count_minor, x_minor_inc, x_major_inc);
-    }
 
     x_pos = priv->plot_box.x;
     y_pos = priv->plot_box.height;
@@ -1718,10 +1645,7 @@ static void glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph)
     gint        x_adj = 0, x1_adj = 0, width = 0, height = 0, h_index = 0, x_scale = 0,
                 cx = 0, cy = 0;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_draw_x_grid_labels()");
-    }
+    g_debug ("===> glg_line_graph_draw_x_grid_labels()");
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1734,9 +1658,7 @@ static void glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph)
     x_adj = width / 2;
     x1_adj = width / 4;
 
-	if (glg_flag_debug) {	
-		g_debug ("Scale:Labels:X small font sizes cx=%d, cy=%d", width, height);
-	}
+	g_debug ("Scale:Labels:X small font sizes cx=%d, cy=%d", width, height);
 
     g_snprintf (ch_grid_label, GLG_MAX_BUFFER, "<span font_desc=\"Monospace 8\">%s", "0");
     for (h_index = priv->x_range.i_inc_major_scale_by;
@@ -1780,9 +1702,7 @@ static void glg_line_graph_draw_x_grid_labels (GlgLineGraph *graph)
 
     pango_layout_get_pixel_size (layout, &cx, &cy);
 
-    if (glg_flag_debug) {
-	    g_debug ("Scale:Labels:X plot_box.cx=%d, layout.cx=%d, layout.cy=%d", priv->plot_box.width, cx, cy);
-    }
+    g_debug ("Scale:Labels:X plot_box.cx=%d, layout.cx=%d, layout.cy=%d", priv->plot_box.width, cx, cy);
 
     if ( priv->page_box.width > cx ) {
 	     cairo_set_source_rgba (priv->cr, (gdouble)priv->scale_color.red,
@@ -1810,10 +1730,8 @@ static void glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph)
     PangoLayout *layout = NULL;
     gint        y_adj = 0, width = 0, height = 0, v_index = 0;
 
-    if ( glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_draw_y_grid_labels()");
-    }
+    g_debug ("===> glg_line_graph_draw_y_grid_labels()");
+
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -1874,10 +1792,8 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
   	gint        x = 0, y = 0;
 
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_draw_tooltip()");
-    }
+    g_debug ("===> glg_line_graph_draw_tooltip()");
+	
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -2043,10 +1959,7 @@ static gint glg_line_graph_data_series_draw (GlgLineGraph *graph, PGLG_SERIES ps
     gint        v_index = 0;
     GdkPoint   *point_pos = NULL;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_data_series_draw()");
-    }
+    g_debug ("===> glg_line_graph_data_series_draw(entered)");
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), -1);
     g_return_val_if_fail (psd != NULL, -1);
     g_return_val_if_fail (psd->point_pos != NULL, -1);
@@ -2126,10 +2039,8 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
     gint64 start_time = glg_duration_us(NULL, NULL);
     gchar buff[64];
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_data_series_draw_all(entered)");
-    }
+    g_debug ("===> glg_line_graph_data_series_draw_all(entered)");
+	
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -2150,10 +2061,7 @@ static gint glg_line_graph_data_series_draw_all (GlgLineGraph *graph, gboolean r
         data_sets = g_list_next (data_sets);
     }
 
-    if (glg_flag_debug)
-    {
-        g_debug ("glg_line_graph_data_series_draw_all(exited): #series=%d, #points=%d", v_index, points);
-    }
+    g_debug ("glg_line_graph_data_series_draw_all(exited): #series=%d, #points=%d", v_index, points);
 
     return v_index;
 }
@@ -2178,10 +2086,8 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
     gint        v_index = 0;
     gboolean    b_found = FALSE;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_data_series_add_value()");
-    }
+    g_debug ("===> glg_line_graph_data_series_add_value()");
+
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -2242,12 +2148,8 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
             g_list_append (priv->lg_series_time, GINT_TO_POINTER ((time_t) time (NULL)));  /* TODO: Leaking Memory - NO time_t is a gint64 */
     }
 
-    if (glg_flag_debug)
-    {
-        g_debug
-         ("  ==>DataSeriesAddValue: series=%d, value=%3.1lf, index=%d, count=%d, max_pts=%d",
-          i_series_number, y_value, v_index, psd->i_point_count, psd->i_max_points);
-    }
+    g_debug ("  ==>DataSeriesAddValue: series=%d, value=%3.1lf, index=%d, count=%d, max_pts=%d",
+             i_series_number, y_value, v_index, psd->i_point_count, psd->i_max_points);
 
     return TRUE;
 }
@@ -2263,10 +2165,7 @@ static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph)
     GList      *data_sets = NULL;
     gint        i_count = 0;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_data_series_remove_all()");
-    }
+    g_debug ("===> glg_line_graph_data_series_remove_all()");
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
@@ -2288,10 +2187,7 @@ static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph)
     priv->i_num_series = 0;
     priv->i_points_available = 0;    
 
-    if (glg_flag_debug)
-    {
-        g_debug ("  ==>DataSeriesRemoveAll: number removed=%d", i_count);
-    }
+    g_debug ("  ==>DataSeriesRemoveAll: number removed=%d", i_count);
 
     return TRUE;
 }
@@ -2313,10 +2209,7 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
 	GlgLineGraphPrivate *priv;
     PGLG_SERIES  psd = NULL;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_data_series_add()");
-    }
+    g_debug ("===> glg_line_graph_data_series_add()");
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), FALSE);
     g_return_val_if_fail (pch_legend_text != NULL, -1);
     g_return_val_if_fail (pch_color_text != NULL, -1);
@@ -2347,11 +2240,7 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
     priv->lg_series = g_list_append (priv->lg_series, psd);
     psd->i_series_id = priv->i_num_series++;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("  ==>DataSeriesAdd: series=%d, max_pts=%d",
-                 psd->i_series_id, psd->i_max_points);
-    }
+    g_debug ("  ==>DataSeriesAdd: series=%d, max_pts=%d", psd->i_series_id, psd->i_max_points);
 
     return psd->i_series_id;
 }
@@ -2364,14 +2253,19 @@ extern gint glg_line_graph_data_series_add (GlgLineGraph *graph, const gchar *pc
 static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventButton * ev)
 {
     GlgLineGraphPrivate *priv;
-  
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_button_press_event_cb()");
-    }
-	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(widget), FALSE);
 
 	priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+
+	if ( !(((ev->x >= priv->plot_box.x) &&      // filter out moves not inside plot box
+		    (ev->y >= priv->plot_box.y)) &&
+		   ((ev->x <= priv->plot_box.x + priv->plot_box.width) &&      // filter out moves not inside plot box
+		    (ev->y <= priv->plot_box.y + priv->plot_box.height)))
+	   ) {
+		return TRUE;
+	}
+
+    g_debug ("===> glg_line_graph_button_press_event_cb()");
+	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(widget), TRUE);
     
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 1))
     {
@@ -2379,12 +2273,6 @@ static gboolean glg_line_graph_button_press_event (GtkWidget * widget, GdkEventB
         gdk_window_get_device_position (ev->window, priv->device_pointer, &priv->mouse_pos.x, &priv->mouse_pos.y, &priv->mouse_state);
         glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
         return TRUE;
-    }
-    if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 2) && priv->b_mouse_onoff)
-    {   	
-        glg_flag_debug = glg_flag_debug ? FALSE : TRUE;
-        glg_line_graph_redraw (GLG_LINE_GRAPH(widget));        /* point select action */
-        return TRUE;        
     }
     if ((ev->type & GDK_BUTTON_PRESS) && (ev->button == 3))
     {
@@ -2406,13 +2294,19 @@ static gboolean glg_line_graph_motion_notify_event (GtkWidget * widget, GdkEvent
   GdkModifierType state;
   gint        x = 0, y = 0;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_motion_notify_event_cb()");
-    }
-	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(widget), FALSE);
+  priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
 
-	priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+	if ( !(((ev->x >= priv->plot_box.x) &&      // filter out moves not inside plot box
+		    (ev->y >= priv->plot_box.y)) &&
+		   ((ev->x <= priv->plot_box.x + priv->plot_box.width) &&      // filter out moves not inside plot box
+		    (ev->y <= priv->plot_box.y + priv->plot_box.height)))
+	   ) {
+		return TRUE;
+	}
+
+    g_debug ("===> glg_line_graph_motion_notify_event_cb()");
+
+    g_return_val_if_fail ( GLG_IS_LINE_GRAPH(widget), TRUE);
 
     if (ev->is_hint)
     {
@@ -2442,10 +2336,7 @@ static void glg_line_graph_destroy (GtkWidget *object)
   GlgLineGraphPrivate *priv = NULL;
   GtkWidget       *widget = NULL;
 
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_destroy(enter)");
-    }
+  g_debug ("===> glg_line_graph_destroy(enter)");
 
   g_return_if_fail (object != NULL);
   
@@ -2453,7 +2344,7 @@ static void glg_line_graph_destroy (GtkWidget *object)
 
   g_return_if_fail ( GLG_IS_LINE_GRAPH(widget));
 
-  priv = GLG_LINE_GRAPH_GET_PRIVATE (widget);
+  priv = GLG_LINE_GRAPH(widget)->priv;
   g_return_if_fail ( priv != NULL );
   
   if ( priv->x_label_text )  /* avoid multiple destroys */
@@ -2469,17 +2360,13 @@ static void glg_line_graph_destroy (GtkWidget *object)
 
       cairo_surface_destroy(priv->surface);
 
-//      gtk_widget_unregister_window (widget, gtk_widget_get_window(widget));
-
       if (GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy != NULL)
       {
          (*GTK_WIDGET_CLASS (glg_line_graph_parent_class)->destroy) (object);
       }
   }
-    if ( glg_flag_debug)
-    {
-        g_debug ("glg_line_graph_destroy(exit)");
-    }
+
+  g_debug ("glg_line_graph_destroy(exited)");
 
   return;
 }
@@ -2498,18 +2385,15 @@ static void glg_line_graph_destroy (GtkWidget *object)
  */
 extern void glg_line_graph_chart_set_elements ( GlgLineGraph *graph, GLGElementID element)
 {
-	GlgLineGraphPrivate *priv = NULL;
 	
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_chart_set_elements()");
-    }
+    g_debug ("===> glg_line_graph_chart_set_elements(entered)");
 	g_return_if_fail ( GLG_IS_LINE_GRAPH(graph));
 
-  	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
-  	g_return_if_fail ( priv != NULL );
+  	g_return_if_fail ( graph->priv != NULL );
 
-    priv->lgflags |= element;
+    graph->priv->lgflags |= element;
+
+    g_debug ("===> glg_line_graph_chart_set_elements(exited)");
 }
 
 /**
@@ -2523,19 +2407,14 @@ extern void glg_line_graph_chart_set_elements ( GlgLineGraph *graph, GLGElementI
  */
 extern GLGElementID glg_line_graph_chart_get_elements ( GlgLineGraph *graph)
 {
-    GlgLineGraphPrivate *priv = NULL;
     
-    
-    if (glg_flag_debug)
-    {
-        g_debug ("===> glg_line_graph_chart_get_elements()");
-    }
+    g_debug ("===> glg_line_graph_chart_get_elements(entered)");
 	g_return_val_if_fail ( GLG_IS_LINE_GRAPH(graph), 0);
 
-  	priv = GLG_LINE_GRAPH_GET_PRIVATE (graph);
-  	g_return_val_if_fail ( priv != NULL, 0 );
+  	g_return_val_if_fail ( graph->priv != NULL, 0 );
 
-    return priv->lgflags;
+    g_debug ("===> glg_line_graph_chart_get_elements(exited)");
+    return graph->priv->lgflags;
 }
 
 
@@ -2546,10 +2425,7 @@ static void glg_line_graph_set_property (GObject *object, guint prop_id, const G
   gint  i_value = 0;
 
 
-  if (glg_flag_debug)
-  {
-      g_debug ("===> glg_line_graph_set_property()");
-  }  
+  g_debug ("===> glg_line_graph_set_property(entered)");
   g_return_if_fail ( object != NULL);    
 
   graph = GLG_LINE_GRAPH (object);
@@ -2636,6 +2512,8 @@ static void glg_line_graph_set_property (GObject *object, guint prop_id, const G
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
+
+    g_debug ("===> glg_line_graph_set_property(exited)");
     
     return;
 }
@@ -2645,10 +2523,7 @@ static void glg_line_graph_get_property (GObject *object, guint prop_id, GValue 
   GlgLineGraphPrivate *priv = NULL;
   GlgLineGraph *graph = NULL;
 
-  if (glg_flag_debug)
-  {
-      g_debug ("===> glg_line_graph_get_property()");
-  }
+  g_debug ("===> glg_line_graph_get_property(entered)");
   
   g_return_if_fail ( object != NULL);    
 
@@ -2667,6 +2542,8 @@ static void glg_line_graph_get_property (GObject *object, guint prop_id, GValue 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
+
+    g_debug ("===> glg_line_graph_get_property(exited)");
     
     return;
 }
