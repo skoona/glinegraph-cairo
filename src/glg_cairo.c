@@ -361,7 +361,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (GlgLineGraph, glg_line_graph, GTK_TYPE_WIDGET);
 gint64 glg_duration_us(gint64 *start_time, gchar *method_name); /* utils */
 
 static void 	glg_line_graph_class_init (GlgLineGraphClass *klass);
-//static void 	glg_line_graph_init (GlgLineGraph *graph);
 static void glg_line_graph_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void glg_line_graph_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph);
@@ -426,8 +425,6 @@ static void glg_line_graph_class_init (GlgLineGraphClass *klass)
   	widget_class->button_press_event    = glg_line_graph_button_press_event;
     widget_class->size_allocate         = glg_line_graph_size_allocate;
     widget_class->destroy               = glg_line_graph_destroy;
-
-//    gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_INVALID); // desired ATK_ROLE_DRAWING_AREA);
 
 	/**
 	 * GlgLineGraph::point-selected:
@@ -649,8 +646,6 @@ static void glg_line_graph_realize (GtkWidget *widget)
 	  
       priv->device_manager = gdk_display_get_device_manager ( gtk_widget_get_display (widget) );
       priv->device_pointer = gdk_device_manager_get_client_pointer (priv->device_manager);
-
-//      glg_line_graph_compute_layout(GLG_LINE_GRAPH(widget), &allocation);
     }
 
   glg_line_graph_send_configure (GLG_LINE_GRAPH(widget));
@@ -946,7 +941,6 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 			height = GLG_USER_MODEL_Y;
 	}
 
-//	priv->surface = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, width, height);   /* TODO: This worked very well on some gtk3 versions: also CAIRO_FORMAT_RGB24 */
 
     priv->surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget), /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
                                                    CAIRO_CONTENT_COLOR_ALPHA,
@@ -1358,10 +1352,10 @@ static void glg_line_graph_draw_graph (GtkWidget *graph)
      * draw plot area */
     cairo_set_source_rgba (priv->cr, (gdouble)priv->chart_color.red,
     								 (gdouble)priv->chart_color.green,
-    								 (gdouble)priv->chart_color.blue, 0.5);
+    								 (gdouble)priv->chart_color.blue, 0.8);
 	cairo_rectangle (priv->cr, priv->plot_box.x, priv->plot_box.y, priv->plot_box.width, priv->plot_box.height);
 	cairo_fill_preserve (priv->cr);
-    cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.6);   /* black */
+    cairo_set_source_rgba (priv->cr, 0., 0., 0., 0.8);   /* black */
     cairo_stroke (priv->cr);
     glg_duration_us(&start_time, "glg_line_graph_draw_graph#PlotArea");
 
@@ -1560,7 +1554,7 @@ static gint glg_line_graph_draw_grid_lines (GlgLineGraph *graph)
 
    	cairo_set_source_rgba (priv->cr, (gdouble)priv->window_color.red,
     								 (gdouble)priv->window_color.green,
-    								 (gdouble)priv->window_color.blue, 0.4);
+    								 (gdouble)priv->window_color.blue, 0.6);
  
     count_major = priv->y_range.i_num_major - 1;
     count_minor = priv->y_range.i_num_minor - 1;
@@ -2177,7 +2171,6 @@ static gint glg_line_graph_data_series_remove_all (GlgLineGraph *graph)
         psd = data_sets->data;
         g_free (psd->lg_point_dvalue);
         g_free (psd->point_pos);
-        // g_free (psd);
         data_sets = g_list_next (data_sets);
         i_count++;
     }
