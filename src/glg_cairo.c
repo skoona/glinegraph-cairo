@@ -1919,10 +1919,8 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
     }
 
     layout = pango_cairo_create_layout (priv->cr);
-    pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
-
     pango_layout_set_markup (layout, priv->ch_tooltip_text, -1);
-
+    pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
     pango_layout_get_pixel_size (layout, &width, &height);
 
     x_pos = priv->tooltip_box.x + ((priv->tooltip_box.width - width) / 2);
