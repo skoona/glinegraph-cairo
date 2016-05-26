@@ -48,13 +48,16 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
 	if ( gb_stop ) return FALSE;
 
     g_return_val_if_fail (graph != NULL, TRUE);
-    g_return_val_if_fail (GTK_IS_WIDGET(graph), TRUE);
+
+    if(GTK_IS_WIDGET(graph) == FALSE) {
+        return FALSE;
+    }
 
 
     glg_line_graph_data_series_add_value (graph, 0, g_random_double_range (5.0, 20.0) );
     glg_line_graph_data_series_add_value (graph, 1, g_random_double_range (20.0, 30.0) );
     glg_line_graph_data_series_add_value (graph, 2, 82.7 );
-    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (0.0, 100.0) );
+    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (30.0, 98.0) );
     glg_line_graph_data_series_add_value (graph, 4, g_random_double_range (98.0, 100.0) );
 
     glg_line_graph_redraw ( graph );
@@ -109,7 +112,7 @@ int main (int argc, char **argv)
 			"graph-chart-background",  "light blue",
 			"graph-window-background", "white",
 			"text-title-main", "<big><b>A GTK Line Graph Widget</b></big>\n<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
-			"text-title-yaxis", "Pango Text Markup is Supported!\n<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
+			"text-title-yaxis", "Pango Text Markup\n<small>is supported in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
 			"text-title-xaxis", "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
 			NULL);
 
