@@ -57,7 +57,7 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
     glg_line_graph_data_series_add_value (graph, 0, g_random_double_range (5.0, 20.0) );
     glg_line_graph_data_series_add_value (graph, 1, g_random_double_range (20.0, 30.0) );
     glg_line_graph_data_series_add_value (graph, 2, 82.7 );
-    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (30.0, 98.0) );
+    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (30.0, 82.0) );
     glg_line_graph_data_series_add_value (graph, 4, g_random_double_range (98.0, 100.0) );
 
     glg_line_graph_redraw ( graph );
