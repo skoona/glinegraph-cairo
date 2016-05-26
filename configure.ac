@@ -13,6 +13,12 @@ AC_PROG_CC
 AC_HEADER_STDC
 AC_ISC_POSIX
 
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+LT_INIT
+
 dnl
 dnl Gtk API Document Generator
 GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
@@ -32,7 +38,7 @@ AC_SUBST(CFLAGS)
 
 dnl
 dnl put constant on command line and not in a config.h file
-dnl AC_CONFIG_HEADER(config.h) dnl
+AC_CONFIG_HEADER(config.h)
 
 AC_CONFIG_MACRO_DIR(m4)
 AC_CONFIG_SRCDIR(src/lgcairo.c)
