@@ -9,7 +9,7 @@
 
  A lgcairo.c example program is included to demonstrate the possible use of the codeset.
 
-There is also gtk-style API documentation in ./src/docs/reference/html/index.html
+There is also gtk-doc API documentation in ./src/docs/reference/html/index.html
 
 FEATURES: 
 
@@ -22,7 +22,7 @@ FEATURES:
     * Popup Tooltip, via mouse-button-1 click to enable/toggle.
       - Tooltip overlays top graph title, when present.
     * Data points are time stamped with current time when added.
-	* Some key debug messages to console with button-3 enable, then button-2 click/toggle.
+	* Some key debug messages to console: $ export G_MESSAGES_DEBUG=all
 	* Auto Size to current window size; i.e. no-scrolling.
 	* point-selected signal tied to tooltip, to display y value under mouse.
 
@@ -51,10 +51,13 @@ INSTALL INFO:
 			'# make '
 			'# make install'
 
-			'# ./configure '
+			-- or --
+			
+			'# ./autogen.sh --disable-gtk-doc '
 			'# make clean '
 			'# make '
 			'# make install'
+
 
 INSTRUCTIONS: 
 
@@ -67,12 +70,7 @@ INSTRUCTIONS:
 
 KNOWN BUGS:
 
-    Current version has a major performance bug when drawing with Cairo.  Researching the Failure now.
-    First noticed on OSX, then Raspbian, Fedora, and Ubuntu.
-    Related to 'Draw' signal and cairo surface used for painting: first pass 4ms, each pass adds 300ms more
-    until the time to draw is greater than the arrival on new data points, causing a draw backlog.
-	
-	Not sure if it is a GTK3 issue or not Gtk 3.10 sufferes, Gtk 3.16 is reasonable, Gtk 3.18 also suffers.
+    None.
 
 
 
