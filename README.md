@@ -71,6 +71,7 @@ INSTRUCTIONS:
 KNOWN BUGS:
 
     None.
+	5/23/2016 Thanks to LinuxQuestions member: norobro for helping debug the performance issue I was having.
 
 
 
