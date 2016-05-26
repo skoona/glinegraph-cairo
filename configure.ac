@@ -2,7 +2,7 @@ dnl 	glinegraph-cairo toplevel configure.in
 dnl     code level serial-0021-
 AC_PREREQ([2.69])
 
-AC_INIT([glinegraph-cairo], [0.4.1], [James Scott Jr. skoona@users.sourceforge.net], [glinegraph-cairo])
+AC_INIT([glinegraph-cairo], [0.5.0], [James Scott Jr. skoona@gmail.com], [glinegraph-cairo])
 
 AM_INIT_AUTOMAKE([foreign])
 AM_SILENT_RULES([yes])
@@ -38,7 +38,7 @@ AC_SUBST(CFLAGS)
 
 dnl
 dnl put constant on command line and not in a config.h file
-AC_CONFIG_HEADER(config.h)
+# AC_CONFIG_HEADER(config.h)
 
 AC_CONFIG_MACRO_DIR(m4)
 AC_CONFIG_SRCDIR(src/lgcairo.c)
