@@ -21,6 +21,12 @@ dnl stricter options -ansi -pedantic
 CFLAGS='-g -O2 -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Winline -pipe -I/usr/include -I/usr/local/include '
 AC_SUBST(CFLAGS)
 
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+LT_INIT
+
 dnl
 dnl Gtk API Document Generator
 GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
@@ -35,8 +41,7 @@ PKG_CHECK_MODULES(GTK, [[gtk+-3.0 >= 3.10] [glib-2.0 >= 2.40 ]],
 
 dnl
 dnl put constant on command line and not in a config.h file
-dnl AC_CONFIG_HEADER(config.h) dnl
-
+dnl AC_CONFIG_HEADER(config.h)
 
 AC_CONFIG_SRCDIR(src/lgcairo.c)
 AC_CONFIG_FILES([Makefile src/Makefile docs/reference/Makefile])

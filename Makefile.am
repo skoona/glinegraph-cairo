@@ -2,6 +2,7 @@
 #
 ## 	glinegraph toplevel makefile.am
 
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src docs/reference
 
