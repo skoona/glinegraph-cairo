@@ -50,7 +50,7 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
     g_return_val_if_fail (graph != NULL, TRUE);
 
     if(GTK_IS_WIDGET(graph) == FALSE) {
-        return FALSE;
+        return TRUE;
     }
 
 
