@@ -133,7 +133,7 @@ int main (int argc, char **argv)
     glg_line_graph_data_series_add (glg, "Charge", "orange");
     glg_line_graph_data_series_add (glg, "Line", "yellow");
 
-	ui_add_values = g_timeout_add (5000, (GSourceFunc) fn_add_series_data_values, glg);
+	ui_add_values = g_timeout_add (1000, (GSourceFunc) fn_add_series_data_values, glg);
 
 	gtk_widget_show_all (window);
 

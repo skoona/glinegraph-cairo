@@ -731,8 +731,9 @@ gint64 glg_duration_us(gint64 *start_time, gchar *method_name) {
 }
 
 static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle *allocation) {
-    GlgLineGraphPrivate *priv;
-    PangoLayout *layout;
+    GlgLineGraphPrivate *priv = NULL;
+    PangoFontDescription *desc = NULL;
+    PangoLayout *layout = NULL;
     gint        xfactor = 0, yfactor = 0, chart_set_ranges = 0;
 
     g_debug ("===> glg_line_graph_compute_layout(entered)");
@@ -766,7 +767,9 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
 
     /*
      * Create a PangoLayout, get the spacing of one large char to use as a standard */
-    layout = gtk_widget_create_pango_layout (GTK_WIDGET(graph), "M");
+    layout = gtk_widget_create_pango_layout (GTK_WIDGET(graph), NULL);
+        desc = pango_font_description_from_string ("Luxi Mono 12");
+        pango_layout_set_font_description (layout, desc);
 
         pango_layout_set_markup (layout, "<b>M</b>", -1);
         pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
@@ -777,7 +780,9 @@ static gboolean glg_line_graph_compute_layout(GlgLineGraph *graph, GdkRectangle 
         priv->yfactor = yfactor = ((yfactor+8)/10) * 10;
         g_debug ("Alloc:factors:adj:pango_layout_get_pixel_size(width=%d, height=%d)", xfactor, yfactor);
 
+    pango_font_description_free (desc);
     g_object_unref (layout);
+
 
     /*
      * Setup chart rectangles */
@@ -1481,7 +1486,7 @@ static gint glg_line_graph_draw_text_horizontal (GlgLineGraph *graph, gchar * pc
 */
 static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_text, cairo_rectangle_int_t *rect)
 {
-    GlgLineGraphPrivate *priv;
+    GlgLineGraphPrivate *priv = NULL;
     PangoLayout *layout = NULL;
     gint        y_pos = 0;
 
@@ -1517,7 +1522,7 @@ static gint glg_line_graph_draw_text_vertical (GlgLineGraph *graph, gchar *pch_t
 										(gdouble)priv->title_color.blue);
 		cairo_move_to (priv->cr, rect->x, y_pos);
 
-		cairo_rotate(priv->cr, -90 * G_PI / 180.);
+		cairo_rotate(priv->cr, G_PI / -2.);
 
 		pango_cairo_update_layout (priv->cr, layout);
 		pango_cairo_show_layout (priv->cr, layout);
