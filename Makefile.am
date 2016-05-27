@@ -1,6 +1,4 @@
-# $Id: Makefile.am,v 1.34 2007/07/21 13:15:06 jscott Exp $
-#
-## 	glinegraph toplevel makefile.am
+# 	glinegraph library toplevel makefile.am
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -16,7 +14,7 @@ glinegraph_cairodoc_DATA =	README.md \
 						INSTALL \
 						NEWS \
 						ChangeLog \
-						images/* \
+						docs/images/* \
 						autogen.sh
 						
 EXTRA_DIST = 	$(glinegraph_cairodoc_DATA) m4 build-aux 

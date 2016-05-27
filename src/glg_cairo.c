@@ -107,28 +107,28 @@
  *  gint  i_series_0 = 0, i_series_1 = 0;
  *  ...
  *  glg = glg_line_graph_new(
- *              "range-tick-minor-x", 1,
- *   					"range-tick-major-x", 2,
- *   					"range-scale-minor-x", 0,
- *   					"range-scale-major-x", 40,
- *   					"range-tick-minor-y", 5,
- *   					"range-tick-major-y", 10,
- *   					"range-scale-minor-y", 0,
- *   					"range-scale-major-y", 100,
- *   					"chart-set-elements", GLG_TOOLTIP | 
- *						GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y |
- *                	 	GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |                                     
- *                	 	GLG_GRID_LINES | GLG_GRID_MINOR_X | GLG_GRID_MAJOR_X |
- *                    	GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y, 
- *                    	"series-line-width", 3, 
- *                      "graph-title-foreground",  "blue",
- *   					"graph-scale-foreground",  "red",
- *    					"graph-chart-background",  "light blue",
- *    					"graph-window-background", "white", 
- *    					"text-title-main", "This Top Title Line ",        				
- *                      "text-title-yaxis", "This is the Y axis title line.",
- *         				"text-title-xaxis", "This is the X axis title line.",
- *   			        NULL);
+ *       "range-tick-minor-x", 1,
+ *       "range-tick-major-x", 2,
+ *       "range-scale-minor-x", 0,
+ *       "range-scale-major-x", 40,
+ *       "range-tick-minor-y", 5,
+ *       "range-tick-major-y", 10,
+ *       "range-scale-minor-y", 0,
+ *       "range-scale-major-y", 100,
+ *       "chart-set-elements", GLG_TOOLTIP |
+ *       GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y |
+ *       GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y |
+ *       GLG_GRID_LINES | GLG_GRID_MINOR_X | GLG_GRID_MAJOR_X |
+ *       GLG_GRID_MINOR_Y | GLG_GRID_MAJOR_Y,
+ *       "series-line-width", 3,
+ *       "graph-title-foreground",  "blue",
+ *       "graph-scale-foreground",  "red",
+ *       "graph-chart-background",  "light blue",
+ *       "graph-window-background", "white",
+ *       "text-title-main", "This Top Title Line ",
+ *       "text-title-yaxis", "This is the Y axis title line.",
+ *       "text-title-xaxis", "This is the X axis title line.",
+ *       NULL);
  *
  *  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
  *  gtk_widget_show_all (window);
@@ -203,7 +203,7 @@
  *
  * <note>
  *  <title>lgcairo.c demonstration program</title>
- *  <link linkend="lgcairo-Sample-Program">C example program</link>
+ *  <link rel="chapter" href="html/ch02.html">C example program</link>
  * </note>
  * 
  */

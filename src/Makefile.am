@@ -1,6 +1,4 @@
-# $Id$ 
-#
-# 	lgcairo source level makefile.am for widget version
+# 	lgcairo source level makefile.am for widget library version
 
 ACLOCAL_AMFLAGS = -I m4
 

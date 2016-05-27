@@ -2,6 +2,7 @@
 
 # We require automake 1.6 at least.
 AUTOMAKE_OPTIONS = 1.6
+ACLOCAL_AMFLAGS = -I m4
 
 # This is a blank Makefile.am for using gtk-doc.
 # Copy this to your project's API docs directory and modify the variables to
@@ -51,7 +52,7 @@ IGNORE_HFILES=
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
-HTML_IMAGES=$(top_srcdir)/images/glg_cairo3.png $(top_srcdir)/src/lgcairo.c
+HTML_IMAGES=$(top_srcdir)/docs/images/glg_cairo3.png
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml
@@ -68,7 +69,7 @@ expand_content_files=
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=-I$(top_srcdir) $(GTK_CFLAGS) $(CFLAGS) 
-GTKDOC_LIBS=$(top_srcdir)/src/lgcairo-glg_cairo.o $(GTK_LIBS) $(LDFLAGS)
+GTKDOC_LIBS=$(top_srcdir)/src/.libs/libglinegraph_la-glg_cairo.o $(GTK_LIBS) $(LDFLAGS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include  $(top_srcdir)/gtk-doc.make

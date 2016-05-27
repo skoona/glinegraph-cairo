@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
-AC_INIT([glinegraph-cairo], [0.5.0], [James Scott Jr. skoona@gmail.com], 
-        [glinegraph-cairo], [https://github.com/skoona/glinegraph-cairo])
+AC_INIT([glinegraph-cairo-lib], [0.5.0_lib], [James Scott Jr. skoona@gmail.com], 
+        [glinegraph-cairo-lib], [https://github.com/skoona/glinegraph-cairo])
 
 # Put autotools auxiliary files in subdirectories to reduce clutter:
 AC_CONFIG_AUX_DIR([build-aux])
@@ -16,16 +16,16 @@ AC_GNU_SOURCE
 AC_PROG_CC
 AC_HEADER_STDC
 AC_ISC_POSIX
-
-dnl stricter options -ansi -pedantic
-CFLAGS='-g -O2 -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Winline -pipe -I/usr/include -I/usr/local/include '
-AC_SUBST(CFLAGS)
-
 AC_ENABLE_SHARED
 AC_DISABLE_STATIC
 AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 LT_INIT
+
+dnl stricter options -ansi -pedantic
+CFLAGS='-g -O2 -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Winline -pipe -I/usr/local/include '
+AC_SUBST(CFLAGS)
+
 
 dnl
 dnl Gtk API Document Generator
