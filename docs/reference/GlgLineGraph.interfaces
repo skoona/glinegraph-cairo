@@ -1,4 +1,0 @@
-GtkWidget AtkImplementorIface GtkBuildable
-GlgLineGraph AtkImplementorIface GtkBuildable
-GtkContainer AtkImplementorIface GtkBuildable
-GtkWidgetAccessible AtkComponent
