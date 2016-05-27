@@ -35,7 +35,7 @@ LT_INIT
 
 dnl
 dnl Gtk API Document Generator
-GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+GTK_DOC_CHECK([1.14],[--copy --flavour no-tmpl])
 
 dnl
 dnl Check for Gtk+ Libraries
