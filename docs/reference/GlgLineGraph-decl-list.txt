@@ -1,6 +1,10 @@
 <SECTION>
 <FILE>glg_cairo</FILE>
-<TITLE>GlgLineGraph Widget</TITLE>
+<TITLE>GlgLineGraph</TITLE>
+GLG_USER_MODEL_X
+GLG_USER_MODEL_Y
+GLG_MAX_STRING
+GlgLineGraphClass
 GlgLineGraph
 GLGElementID
 glg_line_graph_new
@@ -15,8 +19,10 @@ glg_line_graph_chart_set_y_ranges
 glg_line_graph_data_series_add
 glg_line_graph_data_series_add_value
 <SUBSECTION Standard>
-GLG_LINE_GRAPH
 GLG_IS_LINE_GRAPH
+GLG_LINE_GRAPH
 GLG_TYPE_LINE_GRAPH
+GlgLineGraphPrivate
+glg_line_graph_get_type
 </SECTION>
 

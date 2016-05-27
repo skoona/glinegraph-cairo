@@ -30,9 +30,18 @@
 
 G_BEGIN_DECLS
 
-
+/**
+ * Constants:
+ * @GLG_USER_MODEL_X: Minimum graph width before auto-scaling.
+ * @GLG_USER_MODEL_Y: Minimum graph height before auto-scaling.
+ */
 #define GLG_USER_MODEL_X 570     /* Minimum width */
 #define GLG_USER_MODEL_Y 270     /* Minimum height */
+
+/**
+ * @GLG_MAX_STRING: Maximum gchar string size for any api.
+ */
+#define GLG_MAX_STRING  256      /* Size of a text string */
 
 typedef struct _GlgLineGraph  GlgLineGraph;
 typedef struct _GlgLineGraphClass GlgLineGraphClass;
@@ -152,10 +161,7 @@ typedef enum _GLG_Graph_Elements {
 
 #define GLG_TYPE_LINE_GRAPH			(glg_line_graph_get_type ())
 #define GLG_LINE_GRAPH(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GLG_TYPE_LINE_GRAPH, GlgLineGraph))
-#define GLG_LINE_GRAPH_CLASS(obj)	(G_TYPE_CHECK_CLASS_CAST ((obj), GLG_LINE_GRAPH, GlgLineGraphClass))
 #define GLG_IS_LINE_GRAPH(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GLG_TYPE_LINE_GRAPH))
-#define GLG_IS_LINE_GRAPH_CLASS(obj)	(G_TYPE_CHECK_CLASS_TYPE ((obj), GLG_TYPE_LINE_GRAPH))
-#define GLG_LINE_GRAPH_GET_CLASS	(G_TYPE_INSTANCE_GET_CLASS ((obj), GLG_TYPE_LINE_GRAPH, GlgLineGraphClass))
 
 
 /* 

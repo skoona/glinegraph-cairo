@@ -1,0 +1,11 @@
+<SIGNAL>
+<NAME>GlgLineGraph::point-selected</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>f</FLAGS>
+GlgLineGraph *glglinegraph
+gdouble  arg1
+gdouble  arg2
+gdouble  arg3
+gdouble  arg4
+</SIGNAL>
+

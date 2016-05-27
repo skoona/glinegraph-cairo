@@ -1,12 +1,12 @@
-/* $Id: lgcairo.c,v 1.35 2007/07/25 16:41:07 jscott Exp $ 
+/* lgcairo.c
  * ---------------------------------------------------------------
  * Test glg Line Graph Widget in a GtkWindow
  *
- * (c) 2007, James Scott Jr 
- * Date: 6/2007
+ * (c) 2007, 2016 James Scott Jr
+ * Date: 5/2016
  *
  * Authors:
- *   James Scott Jr <skoona@users.sourceforge.net>
+ *   James Scott Jr <skoona@gmail.com>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,13 +48,16 @@ static gint fn_add_series_data_values (GlgLineGraph *graph)
 	if ( gb_stop ) return FALSE;
 
     g_return_val_if_fail (graph != NULL, TRUE);
-    g_return_val_if_fail (GTK_IS_WIDGET(graph), TRUE);
+
+    if(GTK_IS_WIDGET(graph) == FALSE) {
+        return TRUE;
+    }
 
 
     glg_line_graph_data_series_add_value (graph, 0, g_random_double_range (5.0, 20.0) );
     glg_line_graph_data_series_add_value (graph, 1, g_random_double_range (20.0, 30.0) );
     glg_line_graph_data_series_add_value (graph, 2, 82.7 );
-    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (0.0, 100.0) );
+    glg_line_graph_data_series_add_value (graph, 3, g_random_double_range (30.0, 82.0) );
     glg_line_graph_data_series_add_value (graph, 4, g_random_double_range (98.0, 100.0) );
 
     glg_line_graph_redraw ( graph );
@@ -94,8 +97,7 @@ int main (int argc, char **argv)
 	/*
 	 * Create Graph -- Alternate Init Method
 	 * and set all its options in one call */
-	glg = g_object_new (GLG_TYPE_LINE_GRAPH,
-			"chart-set-elements", GLG_TOOLTIP | GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y | GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y | GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y | GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
+	glg = glg_line_graph_new ("chart-set-elements", GLG_TOOLTIP | GLG_TITLE_T | GLG_TITLE_X | GLG_TITLE_Y | GLG_GRID_MAJOR_X |  GLG_GRID_MAJOR_Y | GLG_GRID_MINOR_X |  GLG_GRID_MINOR_Y | GLG_GRID_LABELS_X | GLG_GRID_LABELS_Y,
 			"range-tick-minor-x", 1,
 			"range-tick-major-x", 10,
 			"range-scale-minor-x", 0,
@@ -110,7 +112,7 @@ int main (int argc, char **argv)
 			"graph-chart-background",  "light blue",
 			"graph-window-background", "white",
 			"text-title-main", "<big><b>A GTK Line Graph Widget</b></big>\n<span foreground=\"orange\"><b><i>using Cairo Graphics</i></b></span>",
-			"text-title-yaxis", "Pango Text Markup is Supported!\n<small>in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
+			"text-title-yaxis", "Pango Text Markup\n<small>is supported in all <span foreground=\"red\">X &amp; Y</span> titles.</small>",
 			"text-title-xaxis", "<i>Click mouse button 1 to <span foreground=\"red\">toggle</span> popup legend.</i>",
 			NULL);
 
@@ -134,7 +136,7 @@ int main (int argc, char **argv)
     glg_line_graph_data_series_add (glg, "Charge", "orange");
     glg_line_graph_data_series_add (glg, "Line", "yellow");
 
-	ui_add_values = g_timeout_add (5000, (GSourceFunc) fn_add_series_data_values, glg);
+	ui_add_values = g_timeout_add (1000, (GSourceFunc) fn_add_series_data_values, glg);
 
 	gtk_widget_show_all (window);
 

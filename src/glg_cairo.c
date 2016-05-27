@@ -1,4 +1,4 @@
-/* $Id: glg_cairo.c,v 1.35 2007/07/25 16:41:07 jscott Exp $ 
+/* glg_cairo.c
  * ----------------------------------------------
  *
  *
@@ -43,7 +43,7 @@
  *
  * <mediaobject>
  *   <imageobject>
- *     <imagedata fileref="glg_cairo.png"/> 
+ *     <imagedata fileref="glg_cairo3.png" format="PNG"/>
  *   </imageobject>
  * </mediaobject>
  *
@@ -55,11 +55,39 @@
  * appended to the 40th position after pos 0 is dropped - effectively rolling the x points
  * from right to left in the chart view.
  *
+ * <emphasis>FEATURES</emphasis>
+ * <itemizedlist>
+ *  <listitem>
+ *  Unlimited data series support.
+ *  </listitem>
+ *  <listitem>
+ *  Accurate scaling across a wide range of X & Y scales.
+ *  </listitem>
+ *  <listitem>
+ *  Using values ranges above or below 1.
+ *  </listitem>
+ *  <listitem>
+ *  Rolling data points, if number of x points exceed x-scale. (left shift)
+ *  </listitem>
+ *  <listitem>
+ *  Ability to change chart background color, window backgrounds colors, etc.
+ *  </listitem>
+ *  <listitem>
+ *  Popup Tooltip, via mouse-button-1 click to enable/toggle. Tooltip overlays top graph title, when present.
+ *  </listitem>
+ *  <listitem>
+ *  Data points are time stamped with current time when added.
+ *  </listitem>
+ *  <listitem>
+ *  Auto Size to current window size; i.e. no-scrolling.
+ *  </listitem>
+ * </itemizedlist>
+ *
  * Packaged as a gtk widget for ease of use and easy inclusion into new or existing programs.
  * 
  * The GlgLinegraph widget has a gobject property for every control option except creating a 
- * new data series - glg_line_graph_series_add(), and adding a value to that series 
- * - glg_line_graph_series_add_value().
+ * new data series glg_line_graph_series_add(), and adding a value to that series with
+ * glg_line_graph_series_add_value().
  * 
  * One signal is available 'point-selected' which outputs the Y value most likely under the 
  * mouse ptr.  For correlation purposes the position of the mouse and the position of the Y point
@@ -72,13 +100,14 @@
  * <example>
  *  <title>Using a GlgLineGraph with gobject methods.</title>
  *  <programlisting>
+ *  #include <gtk/gtk.h>
  *  #include <glg_cairo.h>
  *  ...
  *  GlgLineGraph *glg = NULL;
  *  gint  i_series_0 = 0, i_series_1 = 0;
  *  ...
  *  glg = glg_line_graph_new(
- *                      "range-tick-minor-x", 1,
+ *              "range-tick-minor-x", 1,
  *   					"range-tick-major-x", 2,
  *   					"range-scale-minor-x", 0,
  *   					"range-scale-major-x", 40,
@@ -121,7 +150,7 @@
  * 
  * Or the following standard api method will also work.
  * <example>
- *  <title>Using a GlgLineGraph with standard apis.</title>
+ *  <title>Using a GlgLineGraph with standard APIs.</title>
  *  <programlisting>
  *  #include <gtk/gtk.h>
  *  #include <glg_cairo.h>
@@ -129,7 +158,7 @@
  * GlgLineGraph *glg = NULL;
  * gint  i_series_0 = 0, i_series_1 = 0;
  * ...
- * glg = (GlgLineGraph *) glg_line_graph_new(NULL);
+ * glg = glg_line_graph_new(NULL);
  *
  * glg_line_graph_chart_set_x_ranges (glg, 1, 2,0, 40);
  * glg_line_graph_chart_set_y_ranges (glg, 5,10,0,100);
@@ -147,10 +176,10 @@
  *        					 
  * glg_line_graph_chart_set_text (glg, GLG_TITLE_X, "This is the x label" );
  *
- * glg_line_graph_chart_set_color (graph, GLG_TITLE,  "blue");
- * glg_line_graph_chart_set_color (graph, GLG_SCALE,  "read");
- * glg_line_graph_chart_set_color (graph, GLG_CHART,  "light blue");
- * glg_line_graph_chart_set_color (graph, GLG_WINDOW, "white");	
+ * glg_line_graph_chart_set_color (glg, GLG_TITLE,  "blue");
+ * glg_line_graph_chart_set_color (glg, GLG_SCALE,  "read");
+ * glg_line_graph_chart_set_color (glg, GLG_CHART,  "light blue");
+ * glg_line_graph_chart_set_color (glg, GLG_WINDOW, "white");
  * 
  * gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(glg));
  * gtk_widget_show_all (window);
@@ -164,7 +193,7 @@
  * glg_line_graph_data_series_add_value (glg, i_series_1, 56.8);
  * glg_line_graph_data_series_add_value (glg, i_series_1, 83.6);
  *
- * glg_line_graph_redraw ( graph );
+ * glg_line_graph_redraw ( glg );
  * 	   
  *  </programlisting>
  * </example>
@@ -172,44 +201,10 @@
  *
  * A 'lgcairo.c' demonstration proram is included to illustrate how to quickly use the widget.
  *
- * <emphasis>FEATURES</emphasis>
- * <itemizedlist>
- *  <listitem>
- *  Unlimited data series support.
- *  </listitem>
- *  <listitem>
- *  Accurate scaling across a wide range of X & Y scales.
- *  </listitem>
- *  <listitem>
- *  Using values ranges above or below 1.
- *  </listitem>
- *  <listitem>
- *  Rolling data points, if number of x points exceed x-scale. (left shift)
- *  </listitem>
- *  <listitem>
- *  Ability to change chart background color, window backgrounds colors, etc.
- *  </listitem>
- *  <listitem>
- *  Popup Tooltip, via mouse-button-1 click to enable/toggle. Tooltip overlays top graph title, when present.
- *  </listitem>
- *  <listitem>
- *  Data points are time stamped with current time when added.
- *  </listitem>
- *  <listitem>
- *  Some key debug messages to console with button-3 enable, then button-2 click/toggle.
- *  </listitem>
- *  <listitem>
- *  Auto Size to current window size; i.e. no-scrolling.
- *  </listitem>
- * </itemizedlist>
- *
- * <example>
- *  <title>A sample program</title>
- *  <programlisting>
- *   <link fileref="linegraph.c"/> 
- *  </programlisting>
- * </example>
- *
+ * <note>
+ *  <title>lgcairo.c demonstration program</title>
+ *  <link linkend="lgcairo-Sample-Program">C example program</link>
+ * </note>
  * 
  */
 
@@ -219,11 +214,7 @@
 
 #include "glg_cairo.h"
 
-#define GLG_MAX_STRING  256      /* Size of a text string */
 #define GLG_MAX_BUFFER  512      /* Size of a text buffer or local string */
-
-#define BORDER_2PAD 	2
-#define BORDER_4PAD 	4
 
 
 /*
@@ -354,6 +345,9 @@ enum _GLG_PROPERTY_ID {
 G_DEFINE_TYPE_WITH_PRIVATE (GlgLineGraph, glg_line_graph, GTK_TYPE_WIDGET);
 
 #define GLG_LINE_GRAPH_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GLG_TYPE_LINE_GRAPH, GlgLineGraphPrivate))
+#define GLG_LINE_GRAPH_CLASS(obj)   (G_TYPE_CHECK_CLASS_CAST ((obj), GLG_LINE_GRAPH, GlgLineGraphClass))
+#define GLG_IS_LINE_GRAPH_CLASS(obj)    (G_TYPE_CHECK_CLASS_TYPE ((obj), GLG_TYPE_LINE_GRAPH))
+#define GLG_LINE_GRAPH_GET_CLASS    (G_TYPE_INSTANCE_GET_CLASS ((obj), GLG_TYPE_LINE_GRAPH, GlgLineGraphClass))
 
 /*
  * Private routines for graph widget internal functions
@@ -1046,10 +1040,12 @@ extern void glg_line_graph_redraw (GlgLineGraph *graph)
 
 /**
  * glg_line_graph_new:
+ * @first_property_name: NULL or gchar pointer to first property name to set, next param must be its value
+ * @...: va_list null terminated list of additional property-name/property-value pairs
  *
  * Creates a new line graph widget
  * - optionally accepts 'property-name, property-values',...,NULL pairs
- * Returns:  a pointer to a #GlgLineGraph widget 
+ * Returns:  #GlgLineGraph widget
 */
 extern GlgLineGraph * glg_line_graph_new (const gchar *first_property_name, ...)
 {
@@ -2132,7 +2128,7 @@ extern gboolean glg_line_graph_data_series_add_value (GlgLineGraph *graph, gint 
     {
         GList *gl_remove = NULL;
 
-        if (g_list_length (priv->lg_series_time) == psd->i_max_points +1 )
+        if (g_list_length (priv->lg_series_time) == (guint)psd->i_max_points +1 )
         {
             gl_remove = g_list_first (priv->lg_series_time);
             	priv->lg_series_time = g_list_remove (priv->lg_series_time, gl_remove->data);

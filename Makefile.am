@@ -15,10 +15,10 @@ glinegraph_cairodoc_DATA =	README.md \
 						INSTALL \
 						NEWS \
 						ChangeLog \
-						src/glg_cairo.png \
+						images/* \
 						autogen.sh
 						
-EXTRA_DIST = 	$(glinegraph_cairodoc_DATA) 
+EXTRA_DIST = 	$(glinegraph_cairodoc_DATA) m4 build-aux 
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 

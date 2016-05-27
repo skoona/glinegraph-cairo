@@ -1,0 +1,6 @@
+GLG_MAX_STRING
+GLG_USER_MODEL_X
+GLG_USER_MODEL_Y
+GlgLineGraphClass
+GlgLineGraphPrivate
+glg_line_graph_get_type

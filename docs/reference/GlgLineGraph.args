@@ -1,0 +1,170 @@
+<ARG>
+<NAME>GlgLineGraph::chart-set-elements</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[0,65536]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Show Chart Elements</NICK>
+<BLURB>Enable showing these elements of the chart body.</BLURB>
+<DEFAULT>128</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::graph-chart-background</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Color name</NICK>
+<BLURB>Chart inside fill color.</BLURB>
+<DEFAULT>"light blue"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::graph-scale-foreground</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Color name</NICK>
+<BLURB>X and Y chart scale foreground font color.</BLURB>
+<DEFAULT>"black"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::graph-title-foreground</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Color name</NICK>
+<BLURB>Main title foreground color.</BLURB>
+<DEFAULT>"blue"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::graph-window-background</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Color name</NICK>
+<BLURB>Window background fill color.</BLURB>
+<DEFAULT>"white"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-scale-major-x</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,1000]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>x major scale range</NICK>
+<BLURB>x major scale range.</BLURB>
+<DEFAULT>100</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-scale-major-y</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,1000]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Y major scale range</NICK>
+<BLURB>Y major scale range.</BLURB>
+<DEFAULT>100</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-scale-minor-x</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[0,100]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>x minor scale range</NICK>
+<BLURB>x minor scale range.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-scale-minor-y</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[0,100]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Y minor scale range</NICK>
+<BLURB>Y minor scale range.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-tick-major-x</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,1000]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>x major tick increment</NICK>
+<BLURB>x major ticks on scale.</BLURB>
+<DEFAULT>10</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-tick-major-y</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,1000]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Y major tick increment</NICK>
+<BLURB>Y major ticks on scale.</BLURB>
+<DEFAULT>10</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-tick-minor-x</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,100]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>x minor tick increment</NICK>
+<BLURB>x minor ticks on scale.</BLURB>
+<DEFAULT>5</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::range-tick-minor-y</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,100]</RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Y minor tick increment</NICK>
+<BLURB>Y minor ticks on scale.</BLURB>
+<DEFAULT>5</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::series-line-width</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,10]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>Series line width</NICK>
+<BLURB>Width of line drawn for data series.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::text-title-main</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Graph Top Title</NICK>
+<BLURB>Title at top of graph on the X axis.</BLURB>
+<DEFAULT>"<big><b>Top Title</b></big>"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::text-title-xaxis</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Graph x axis title</NICK>
+<BLURB>Title at bottom of graph on the X axis.</BLURB>
+<DEFAULT>"<i>X Axis Title</i>"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>GlgLineGraph::text-title-yaxis</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>Graph y axis title</NICK>
+<BLURB>Title on left of graph on the Y axis.</BLURB>
+<DEFAULT>"Y Axis Title"</DEFAULT>
+</ARG>
+

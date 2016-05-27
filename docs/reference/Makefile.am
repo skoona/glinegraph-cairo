@@ -51,7 +51,7 @@ IGNORE_HFILES=
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
-HTML_IMAGES=$(top_srcdir)/src/glg_cairo.png $(top_srcdir)/src/lgcairo.c
+HTML_IMAGES=$(top_srcdir)/images/glg_cairo3.png $(top_srcdir)/src/lgcairo.c
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml

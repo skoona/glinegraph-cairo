@@ -1,0 +1,20 @@
+GObject
+  GInitiallyUnowned
+    GtkWidget
+      GlgLineGraph
+      GtkContainer
+  AtkObject
+    GtkAccessible
+      GtkWidgetAccessible
+  GtkStyle
+  GdkWindow
+  GdkDragContext
+  GtkTooltip
+  GdkScreen
+  GdkDisplayManager
+  GdkDisplay
+GInterface
+  GTypePlugin
+  AtkImplementorIface
+  GtkBuildable
+  AtkComponent
