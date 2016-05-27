@@ -639,8 +639,7 @@ static void glg_line_graph_realize (GtkWidget *widget)
 
       attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
-      priv->window = gdk_window_new (gtk_widget_get_parent_window (widget),
-                               &attributes, attributes_mask);
+      priv->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
       gtk_widget_register_window (widget, priv->window);
       gtk_widget_set_window (widget, priv->window);
 	  
@@ -665,7 +664,7 @@ static void glg_line_graph_size_allocate (GtkWidget *widget, GtkAllocation *allo
   if (gtk_widget_get_realized (widget))
     {
       if (gtk_widget_get_has_window (widget)) {
-        gdk_window_move_resize (gtk_widget_get_window (widget),
+        gdk_window_move_resize (GLG_LINE_GRAPH(widget)->priv->window,
                                 allocation->x, allocation->y,
                                 allocation->width, allocation->height);
  	  }
@@ -942,7 +941,7 @@ static gboolean glg_line_graph_configure_event (GtkWidget *widget, GdkEventConfi
 	}
 
 
-    priv->surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget), /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
+    priv->surface = gdk_window_create_similar_surface (priv->window , /* TODO: Poor Performance: also CAIRO_CONTENT_COLOR_ALPHA */
                                                    CAIRO_CONTENT_COLOR_ALPHA,
     											       width, height);
 	status = cairo_surface_status(priv->surface);
@@ -1751,8 +1750,7 @@ static void glg_line_graph_draw_y_grid_labels (GlgLineGraph *graph)
     g_strlcpy (ch_work, ch_grid_label, GLG_MAX_BUFFER);
     g_snprintf (ch_grid_label, GLG_MAX_BUFFER, "%s</span>", ch_work);
 
-    pango_layout_set_spacing (layout,
-                              ((priv->y_range.i_major_inc - height) * PANGO_SCALE));
+    pango_layout_set_spacing (layout, ((priv->y_range.i_major_inc - height) * PANGO_SCALE));
     pango_layout_set_alignment (layout, PANGO_ALIGN_RIGHT);
     pango_layout_set_markup (layout, ch_grid_label, -1);
 
@@ -1813,7 +1811,7 @@ static gint glg_line_graph_draw_tooltip (GlgLineGraph *graph)
 	/*
 	 * get current mouse pointer, 
 	 * and as a side effect allow another notify message */    
-  	gdk_window_get_device_position (gtk_widget_get_window(GTK_WIDGET(graph)), priv->device_pointer, &x, &y, &priv->mouse_state);
+  	gdk_window_get_device_position (priv->window, priv->device_pointer, &x, &y, &priv->mouse_state);
 
     /* 
      * see if mouse ptr is in plot_box x-range point */
