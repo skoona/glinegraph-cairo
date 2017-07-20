@@ -9,11 +9,11 @@
 
  A lgcairo.c example program is included to demonstrate the possible use of the codeset.
 
-There is also [GtkDoc API documentation](https://skoona.github.io/glinegraph-cairo/docs/reference/html/index.html) in ./src/docs/reference/html/index.html
+There is also [GtkDoc API documentation](https://skoona.github.io/glinegraph-cairo/docs/reference/html/index.html) in ./docs directory.
 
 FEATURES: 
 
-    * GlgLineGraph API Reference Manual in ./src/docs/reference/html/index.html
+    * GlgLineGraph API Reference Manual in ./docs directory.
     * Unlimited data series support.
     * Accurate scaling across a wide range of X & Y scales.
       - Using values ranges above or below 1.
