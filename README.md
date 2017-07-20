@@ -5,6 +5,9 @@
 
  A Gtk3/GLib2/cario GUI application which demonstrates the use of GTK+ for producing xy line graphs.  This widget once created allows you to add one or more data series, then add values to those series for ploting.  The X point is assumed based on arrival order.  However, the Y value or position is based one the current scale and the y value itself.  If the charts x scale maximum is 40, or 40 points, the 41+ value is appended to the 40th position after all points are shifted left and out through pos 0.
  
+[GtkDoc](https:///skoona.github.io/glinegraph-cairo/docs/reference/html/GlgLineGraph-GlgLineGraph-Widget.html#GlgLineGraph-GlgLineGraph-Widget.description)
+
+
  Packaged as a gtk widget for ease of use.	
 
  A lgcairo.c example program is included to demonstrate the possible use of the codeset.
