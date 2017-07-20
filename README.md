@@ -9,7 +9,7 @@
 
  A lgcairo.c example program is included to demonstrate the possible use of the codeset.
 
-There is also [GtkDoc API documentation](https:///skoona.github.io/glinegraph-cairo/docs/reference/html/index.html) API documentation in ./src/docs/reference/html/index.html
+There is also [GtkDoc API documentation](https://skoona.github.io/glinegraph-cairo/docs/reference/html/index.html) API documentation in ./src/docs/reference/html/index.html
 
 FEATURES: 
 
